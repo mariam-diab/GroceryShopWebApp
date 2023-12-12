@@ -20,5 +20,11 @@ def shop_grid(request):
 def shopping_cart(request):
     return render(request, 'GroceryApp/shoping-cart.html')
 
+def login(request):
+    return render(request, 'GroceryApp/login.html')
+
+def register(request):
+    return render(request, 'GroceryApp/register.html')
+
 
 

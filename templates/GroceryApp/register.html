@@ -1,0 +1,41 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<!-- Registration Form Begin -->
+<section class="register spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="register__form">
+                    <h4>Create an Account</h4>
+                    <form action="#">
+                        <div class="checkout__input">
+                            <p>First Name<span>*</span></p>
+                            <input type="text" name="first_name" required>
+                        </div>
+                        <div class="checkout__input">
+                            <p>Last Name<span>*</span></p>
+                            <input type="text" name="last_name" required>
+                        </div>
+                        <div class="checkout__input">
+                            <p>Email<span>*</span></p>
+                            <input type="email" name="email" required>
+                        </div>
+                        <div class="checkout__input">
+                            <p>Password<span>*</span></p>
+                            <input type="password" name="password" required>
+                        </div>
+                        <button type="submit" class="site-btn">Register</button>
+                    </form>
+                    <p>Already have an account? <a href="#">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Registration Form End -->
+
+{% endblock content %}

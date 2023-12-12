@@ -10,4 +10,6 @@ urlpatterns = [
     path("shop_details", shop_details),
     path("shop_grid", shop_grid),
     path("shopping_cart",shopping_cart),
+    path("login", login),
+    path("register", register),
     ]

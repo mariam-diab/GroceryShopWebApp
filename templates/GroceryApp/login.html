@@ -1,0 +1,31 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Login Form Begin -->
+<section class="login spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="login__form">
+                    <h4>Login</h4>
+                    <form action="#">
+                        <div class="checkout__input">
+                            <p>Email<span>*</span></p>
+                            <input type="email" name="email" required>
+                        </div>
+                        <div class="checkout__input">
+                            <p>Password<span>*</span></p>
+                            <input type="password" name="password" required>
+                        </div>
+                        <button type="submit" class="site-btn">Login</button>
+                    </form>
+                    <p>Don't have an account? <a href="#">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Login Form End -->
+{% endblock content %}
