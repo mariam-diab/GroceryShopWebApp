@@ -79,9 +79,18 @@ WSGI_APPLICATION = 'GroceryShopProject.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    'default':{
+    'ENGINE':'mssql',                   
+    'NAME':'GroceryShop',                    
+    'HOST':'MARIAMU', 
+    'PORT':'',                           
+    'OPTIONS': {
+        'driver': 'ODBC Driver 17 for SQL Server',
+        }
     }
 }
 
@@ -138,3 +147,5 @@ JAZZMIN_SETTINGS ={
     'site_logo' : 'img/logo.png',
     'copyright' : 'grocery.shop.com',
 }
+
+AUTH_USER_MODEL = 'userauths.User'
