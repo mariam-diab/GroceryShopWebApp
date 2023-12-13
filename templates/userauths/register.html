@@ -11,22 +11,40 @@
             <div class="col-lg-6 offset-lg-3">
                 <div class="register__form">
                     <h4>Create an Account</h4>
-                    <form action="#">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <strong>{{ error }}</strong><br>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                         <div class="checkout__input">
                             <p>First Name<span>*</span></p>
-                            <input type="text" name="first_name" required>
+                            {{form.first_name}}
                         </div>
                         <div class="checkout__input">
                             <p>Last Name<span>*</span></p>
-                            <input type="text" name="last_name" required>
+                            {{form.last_name}}
                         </div>
                         <div class="checkout__input">
                             <p>Email<span>*</span></p>
-                            <input type="email" name="email" required>
+                            {{form.email}}
+                        </div>
+                        <div class="checkout__input">
+                            <p>Username<span>*</span></p>
+                            {{form.username}}
                         </div>
                         <div class="checkout__input">
                             <p>Password<span>*</span></p>
-                            <input type="password" name="password" required>
+                            {{form.password1}}
+                        </div>
+                        <div class="checkout__input">
+                            <p>Confirm Password<span>*</span></p>
+                            {{form.password2}}
                         </div>
                         <button type="submit" class="site-btn">Register</button>
                     </form>
