@@ -5,6 +5,6 @@ app_name = "userauths"
 
 urlpatterns = [
     path("", register),
-    path("login", login)
+    path("login", login),
     
 ]
