@@ -80,7 +80,7 @@
         </div>
         <nav class="humberger__menu__nav mobile-menu">
             <ul>
-                <li class="active"><a href="./index.html">Home</a></li>
+                <li class="active"><a href="/index.html">Home</a></li>
                 <li><a href="./shop-grid.html">Shop</a></li>
                 <li><a href="#">Pages</a>
                     <ul class="header__menu__dropdown">
@@ -282,9 +282,29 @@
                     </div>
                 </div>
             </div>
+
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class = "alert alert-{{message.tags}}">
+                        <strong>{{ message }}</strong>
+                    </div>
+
+                {% endfor %}
+            {% endif %}
+            <script>
+                setTimeout(() => {
+                    $(".alert").alert("close")
+                }, 3000)
+            </script>
+    
             <div class="humberger__open">
                 <i class="fa fa-bars"></i>
             </div>
+
+            
+
+
         </div>
     </header>
     <!-- Header Section End -->

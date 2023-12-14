@@ -9,13 +9,6 @@
             <div class="col-lg-6 offset-lg-3">
                 <form method='POST'>
                     {% csrf_token %}
-                    {% if messages %}
-                    <div class="alert alert-danger">
-                            {% for message in messages %}
-                            <strong>{{message}}</strong>
-                            {% endfor %}
-                    </div>
-                    {% endif %}
                     <div class="login__form">
                         <h4>Login</h4>
                         <div class="checkout__input">

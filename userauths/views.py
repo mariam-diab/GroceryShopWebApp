@@ -13,7 +13,9 @@ def login(request):
         user = authenticate(email=email, password=password)
         if user:
             auth_login(request, user)
+            messages.success(request, "You logged In")
             return redirect('/')
+            
 
         else:
             messages.error(request, "Wrong email or password!")
