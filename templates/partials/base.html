@@ -31,6 +31,8 @@
         <div class="loader"></div>
     </div>
 
+
+
     <!-- Humberger Begin -->
     <div class="humberger__menu__overlay"></div>
     <div class="humberger__menu__wrapper">
@@ -54,9 +56,27 @@
                     <li><a href="#">English</a></li>
                 </ul>
             </div>
+            <!-- {% if user.is_authenticated %}
             <div class="header__top__right__auth">
-                <a href="#"><i class="fa fa-user"></i> Login</a>
+                <a href="{% url 'userauths:login' %}" id="login-link">
+                    <i class="fa fa-user"></i> Login
+                </a>
             </div>
+            {% else %}
+            <div class="header__top__right__auth">
+                <a href="#" id="user-account">
+                    <i class="fa fa-user"></i> <span id="username">{{ user.username }}</span>
+                    <span class="arrow_carrot-down"></span>
+                </a>
+                <ul id="user-dropdown" style="display: none;">
+                    <li><a href="#">Account Details</a></li>
+                    <li><a href="{% url 'userauths:signout' %}">Logout</a></li>
+                </ul>
+            </div>
+            {% endif %}
+         -->
+            
+
         </div>
         <nav class="humberger__menu__nav mobile-menu">
             <ul>
@@ -120,9 +140,108 @@
                                     <li><a href="#">English</a></li>
                                 </ul>
                             </div>
-                            <div class="header__top__right__auth">
-                                <a href="#"><i class="fa fa-user"></i> Login</a>
+                            {% if user.is_authenticated %}
+                            <!-- <div class="header__top__right__auth">
+                                <a href="#" id="user-account">
+                                    <i class="fa fa-user"></i> <span id="username">{{ user.username }}</span>
+                                    <span class="arrow_carrot-down"></span>
+                                </a>
+        
                             </div>
+                             -->
+                             <head>
+                                <meta charset="UTF-8">
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <style>
+                                    .dropdown {
+                                        position: relative;
+                                        display: inline-block;
+                                    }
+                            
+                                    .dropbtn {
+                                        color: black;
+                                        padding: 10px;
+                                        font-size: 16px;
+                                        border: none;
+                                        cursor: pointer;
+                                        display: flex;
+                                        align-items: center; /* Align items vertically in the container */
+                                    }
+                            
+                                    .user-icon {
+                                        margin-right: 8px; /* Adjust the spacing between the icon and username */
+                                        width: 20px; /* Set the width of the icon */
+                                        height: 20px; /* Set the height of the icon */
+                                    }
+                            
+                                    .dropdown-content {
+                                        display: none;
+                                        position: absolute;
+                                        background-color: #f9f9f9;
+                                        min-width: 160px;
+                                        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+                                        z-index: 1;
+                                    }
+                            
+                                    .dropdown-content a {
+                                        color: black;
+                                        padding: 12px 16px;
+                                        text-decoration: none;
+                                        display: block;
+                                    }
+                            
+                                    .dropdown-content a:hover {
+                                        background-color: #f1f1f1;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                            
+                            <div class="header__top__right__auth">
+                                <div class="dropdown">
+                                    <button class="dropbtn" onclick="toggleDropdown()">
+                                        <img src="{% static 'img/user-icon.png' %}" alt="User Icon" class="user-icon">
+                                        {{ user.username }}
+                                    </button>
+                                    <div class="dropdown-content" id="myDropdown">
+                                        <a href="#">Account</a>
+                                        <a href="#">Cart</a>
+                                        <a href="{% url 'userauths:signout' %}">Log Out</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <script>
+                                function toggleDropdown() {
+                                    var dropdown = document.getElementById("myDropdown");
+                                    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+                                }
+                            
+                                // Close the dropdown if the user clicks outside of it
+                                window.onclick = function(event) {
+                                    if (!event.target.matches('.dropbtn')) {
+                                        var dropdowns = document.getElementsByClassName("dropdown-content");
+                                        for (var i = 0; i < dropdowns.length; i++) {
+                                            var openDropdown = dropdowns[i];
+                                            if (openDropdown.style.display === 'block') {
+                                                openDropdown.style.display = 'none';
+                                            }
+                                        }
+                                    }
+                                }
+                            </script>
+                            
+                            </body>
+
+                            {% else %}
+                            <div class="header__top__right__auth">
+                                <a href="{% url 'userauths:login' %}" id="login-link">
+                                    <i class="fa fa-user"></i> Login
+                                </a>
+
+                            </div>
+                            {% endif %}
+
                         </div>
                     </div>
                 </div>

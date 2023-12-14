@@ -4,7 +4,8 @@ from userauths.views import *
 app_name = "userauths"
 
 urlpatterns = [
-    path("", register),
-    path("login", login),
+    path("register", register, name= 'register'),
+    path("login/", login, name = 'login'),
+    path("signout", logout_view, name = 'signout'),
     
 ]
