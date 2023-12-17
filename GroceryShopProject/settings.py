@@ -83,14 +83,15 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
-     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'GroceryShop',
-        'HOST': 'TOQTOQ\SQLEXPRESS',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
-    },
+    'default':{
+    'ENGINE':'mssql',                   
+    'NAME':'GroceryShop',                    
+    'HOST':'MARIAMU', 
+    'PORT':'',                           
+    'OPTIONS': {
+        'driver': 'ODBC Driver 17 for SQL Server',
+        }
+    }
 }
 
 
