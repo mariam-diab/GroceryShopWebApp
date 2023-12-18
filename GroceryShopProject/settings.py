@@ -85,8 +85,8 @@ DATABASES = {
     # }
     'default':{
     'ENGINE':'mssql',                   
-    'NAME':'GroceryShop',                    
-    'HOST':'MARIAMU', 
+    'NAME':'databaseDB',                    
+    'HOST':'TOQTOQ\SQLEXPRESS', 
     'PORT':'',                           
     'OPTIONS': {
         'driver': 'ODBC Driver 17 for SQL Server',
