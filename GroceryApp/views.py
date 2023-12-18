@@ -6,11 +6,13 @@ from GroceryApp.models import Category, Product, ProductImages
 # Create your views here.
 def index(request):
     # products = Product.objects.all().order_by("-id")
-    products = Product.objects.filter(product_status= "published", featured= True)
+    featured_products = Product.objects.filter(product_status= "published", featured= True)
+    products = Product.objects.all()
     latest_products = Product.objects.all().order_by("-id")
     categories = Category.objects.all()
 
     context = {
+        "featured_products": featured_products,
         "products" : products,
         "categories" : categories,
         "latest_products": latest_products
@@ -27,10 +29,14 @@ def shop_details(request):
     return render(request, 'GroceryApp/shop-details.html')
 
 def shop_grid(request):
-    products = Product.objects.filter(product_status= "published", featured= True)
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    latest_products = Product.objects.all().order_by("-id")
 
     context = {
-        "products" : products
+        "products" : products,
+        "categories" : categories,
+        "latest_products" : latest_products
     }
     return render(request, 'GroceryApp/shop-grid.html', context)
 

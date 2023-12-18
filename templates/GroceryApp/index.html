@@ -15,17 +15,9 @@
                             <span>All departments</span>
                         </div>
                         <ul>
-                            <li><a href="#">Fresh Meat</a></li>
-                            <li><a href="#">Vegetables</a></li>
-                            <li><a href="#">Fruit & Nut Gifts</a></li>
-                            <li><a href="#">Fresh Berries</a></li>
-                            <li><a href="#">Ocean Foods</a></li>
-                            <li><a href="#">Butter & Eggs</a></li>
-                            <li><a href="#">Fastfood</a></li>
-                            <li><a href="#">Fresh Onion</a></li>
-                            <li><a href="#">Papayaya & Crisps</a></li>
-                            <li><a href="#">Oatmeal</a></li>
-                            <li><a href="#">Fresh Bananas</a></li>
+                            {% for c in categories %}
+                            <li><a href="#">{{c.title}}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -103,7 +95,7 @@
                 </div>
             </div>
             <div class="row featured__filter">
-            {% for p in products %}
+            {% for p in featured_products %}
                 <div class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
                     <div class="featured__item">
                         <div class="featured__item__pic set-bg" data-setbg={{p.img.url }}>
@@ -161,7 +153,7 @@
                                     </div>
                                     <div class="latest-product__item__text">
                                         <h6>{{p.title}}</h6>
-                                        <span>$30.00</span>
+                                        <span>{{p.price}}</span>
                                     </div>
                                 </a>
                                 {% endfor %}
@@ -174,7 +166,7 @@
                                     </div>
                                     <div class="latest-product__item__text">
                                         <h6>{{p.title}}</h6>
-                                        <span>$30.00</span>
+                                        <span>{{p.price}}</span>
                                     </div>
                                 </a>
                                 {% endfor %}
