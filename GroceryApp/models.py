@@ -31,6 +31,13 @@ STATUS = (
     ('in_review', 'In Review'),
     ('published', "published"),
 )
+RATING = (
+    (1, "⭐"),
+    (2, "⭐⭐"),
+    (3, "⭐⭐⭐"),
+    (4, "⭐⭐⭐⭐"),
+    (5, "⭐⭐⭐⭐⭐"),
+)
 
 
 
