@@ -107,6 +107,7 @@ class CartOrder(models.Model):
 class CartOrderItems(models.Model):
     id = models.BigAutoField(primary_key=True)
     order = models.ForeignKey(CartOrder, models.CASCADE, blank=False, null=False)
+    invoice_number = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
     product_status = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
     item = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
     image = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
