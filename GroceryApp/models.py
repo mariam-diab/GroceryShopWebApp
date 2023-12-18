@@ -99,8 +99,8 @@ class CartOrder(models.Model):
     product_status = models.CharField(max_length=30, db_collation='Arabic_CI_AI', default='Processing', choices=STATUS_CHOICE)
 
     class Meta:
-        managed = True
-        db_table = 'groceryapp_cartorder'
+        # managed = True
+        # db_table = 'groceryapp_cartorder'
         verbose_name_plural = 'Cart Order'
 
 
@@ -115,8 +115,8 @@ class CartOrderItems(models.Model):
     total = models.DecimalField(max_digits=25, decimal_places=2, default='0.99', blank=True, null=True)
 
     class Meta:
-        managed = True
-        db_table = 'groceryapp_cartorderitems'
+        # managed = True
+        # db_table = 'groceryapp_cartorderitems'
         verbose_name_plural = 'Cart Order Items'
 
     def order_image(self):
@@ -130,8 +130,8 @@ class Wishlist(models.Model):
     date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     class Meta:
-        managed = True
-        db_table = 'groceryapp_wishlist'
+        # managed = True
+        # db_table = 'groceryapp_wishlist'
         verbose_name_plural = 'Wishlist'
 
     def __str__(self):
@@ -145,6 +145,6 @@ class Address(models.Model):
     status = models.BooleanField(default=False)
 
     class Meta:
-        managed = True
-        db_table = 'groceryapp_address'
+        # managed = True
+        # db_table = 'groceryapp_address'
         verbose_name_plural = 'Address'
