@@ -84,3 +84,67 @@ class ProductImages(models.Model):
 
     class Meta:
         verbose_name_plural = "Product Images"
+
+STATUS_CHOICE = (
+    ("process", "Processing"),
+    ("shipped", "Shipped"),
+    ("delivered", "Delivered"),
+)
+class CartOrder(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, models.CASCADE, blank=False, null=False)
+    price = models.DecimalField(max_digits=14, decimal_places=2, default='0.99', null=True)
+    paid_status = models.BooleanField(default=False)
+    order_date = models.DateTimeField(auto_now_add=True)
+    product_status = models.CharField(max_length=30, db_collation='Arabic_CI_AI', default='Processing', choices=STATUS_CHOICE)
+
+    class Meta:
+        managed = True
+        db_table = 'groceryapp_cartorder'
+        verbose_name_plural = 'Cart Order'
+
+
+class CartOrderItems(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    order = models.ForeignKey(CartOrder, models.CASCADE, blank=False, null=False)
+    product_status = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
+    item = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
+    image = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
+    quantity = models.IntegerField(default=1, blank=True, null=True)
+    price = models.DecimalField(max_digits=14, decimal_places=2, default='0.99', blank=True, null=True)
+    total = models.DecimalField(max_digits=25, decimal_places=2, default='0.99', blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'groceryapp_cartorderitems'
+        verbose_name_plural = 'Cart Order Items'
+
+    def order_image(self):
+        return mark_safe('<img src="/media/%s" width="50" height="50" />' %(self.img))
+
+
+class Wishlist(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, models.CASCADE, blank=False, null=False)
+    product = models.ForeignKey(Product, models.SET_NULL, blank=True, null=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'groceryapp_wishlist'
+        verbose_name_plural = 'Wishlist'
+
+    def __str__(self):
+        return self.product.title
+
+
+class Address(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, models.SET_NULL, blank=False, null=True)
+    address = models.CharField(max_length=100, db_collation='Arabic_CI_AI')
+    status = models.BooleanField(default=False)
+
+    class Meta:
+        managed = True
+        db_table = 'groceryapp_address'
+        verbose_name_plural = 'Address'
