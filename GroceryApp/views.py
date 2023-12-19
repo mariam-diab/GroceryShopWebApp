@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from GroceryApp.models import Category, Product, ProductImages
+from GroceryApp.models import *
 
 
 # Create your views here.
@@ -10,12 +10,14 @@ def index(request):
     products = Product.objects.all()
     latest_products = Product.objects.all().order_by("-id")
     categories = Category.objects.all()
+    rated_products = ProductReviews.objects.all().order_by("-rating")
 
     context = {
         "featured_products": featured_products,
         "products" : products,
         "categories" : categories,
-        "latest_products": latest_products
+        "latest_products": latest_products,
+        "rated_products" : rated_products,
     }
     return render(request, 'GroceryApp/index.html', context)
 
