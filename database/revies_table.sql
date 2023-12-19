@@ -1,0 +1,8 @@
+CREATE TABLE product_reviews(
+	id BIGINT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+	user_id BIGINT REFERENCES userauths_user(id) ON DELETE CASCADE,
+	product_id BIGINT REFERENCES GroceryApp_product(id) ON DELETE CASCADE,
+	rating INT,
+	review_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+	review TEXT
+);

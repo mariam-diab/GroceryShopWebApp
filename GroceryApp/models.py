@@ -156,3 +156,19 @@ class Address(models.Model):
         # managed = True
         # db_table = 'groceryapp_address'
         verbose_name_plural = 'Address'
+
+
+class ProductReviews(models.Model):
+    user = models.ForeignKey(User, models.SET_NULL, blank=False, null=True)
+    product = models.ForeignKey(Product, models.SET_NULL, blank=True, null=True)
+    rating = models.IntegerField(choices= RATING, default= None)
+    date = models.DateTimeField(auto_now_add= True)
+
+    class Meta:
+        verbose_name_plural = "Product Reviews"
+    
+    def __str__(self):
+        return self.product.title
+
+    def get_rating(self):
+        return self.rating

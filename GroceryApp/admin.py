@@ -37,6 +37,13 @@ admin.site.register(Wishlist, WishlistAdmin)
 admin.site.register(Address, AddressAdmin)
 
 
+class ProductReviewsAdmin(admin.ModelAdmin):
+    list_display = ['user', 'product', 'rating']  
+
+admin.site.register(ProductReviews, ProductReviewsAdmin)
+
+
+
 
 
 
