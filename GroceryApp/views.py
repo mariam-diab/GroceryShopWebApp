@@ -25,29 +25,31 @@ def checkout(request):
     return render(request, 'GroceryApp/checkout.html')
 
 def contact(request):
-    return render(request, 'GroceryApp/contact.html')
+    categories = Category.objects.raw("select * from GroceryApp_category")
+    return render(request, 'GroceryApp/contact.html', {"categories":categories})
 
 def shop_details(request):
-    return render(request, 'GroceryApp/shop-details.html')
+    categories = Category.objects.raw("select * from GroceryApp_category")
+    return render(request, 'GroceryApp/shop-details.html', {"categories":categories})
 
 def shop_grid(request, title=None):
     if title:
-        products = Product.objects.filter(category__title=title)
+        products = Product.objects.raw(f"select * from GroceryApp_product where category_id in (select cid FROM GroceryApp_category where title = '{title}')")
     else:
-        products = Product.objects.all()
-
+        products = Product.objects.raw(f"select * from GroceryApp_product")    
+    
     min_price_range = min(p.price for p in products)
     max_price_range = max(p.price for p in products)
+
         
-    categories = Category.objects.all()
-    latest_products = Product.objects.all().order_by("-id")
+    categories = Category.objects.raw("select * from GroceryApp_category")
+    latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
 
     min_price = request.GET.get('minamount')
     max_price = request.GET.get('maxamount')
 
     if min_price and max_price:
-        products = products.filter(price__range=(min_price, max_price))
-
+        products = Product.objects.raw(f"select * from GroceryApp_product where price between {min_price} and {max_price}")
 
     context = {
         "products" : products,
@@ -59,7 +61,14 @@ def shop_grid(request, title=None):
     return render(request, 'GroceryApp/shop-grid.html', context)
 
 def shopping_cart(request):
-    return render(request, 'GroceryApp/shoping-cart.html')
+    categories = Category.objects.raw("select * from GroceryApp_category")
+    return render(request, 'GroceryApp/shoping-cart.html', {"categories":categories})
+
+# from django.db import connection
+# def execute_query(query):
+#     with connection.cursor() as cursor:
+#         cursor.execute(query)
+#         return cursor.fetchall()
 
 
 
