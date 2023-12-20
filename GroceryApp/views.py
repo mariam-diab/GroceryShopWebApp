@@ -35,13 +35,26 @@ def shop_grid(request, title=None):
         products = Product.objects.filter(category__title=title)
     else:
         products = Product.objects.all()
+
+    min_price_range = min(p.price for p in products)
+    max_price_range = max(p.price for p in products)
+        
     categories = Category.objects.all()
     latest_products = Product.objects.all().order_by("-id")
+
+    min_price = request.GET.get('minamount')
+    max_price = request.GET.get('maxamount')
+
+    if min_price and max_price:
+        products = products.filter(price__range=(min_price, max_price))
+
 
     context = {
         "products" : products,
         "categories" : categories,
-        "latest_products" : latest_products
+        "latest_products" : latest_products,
+        "min_price" : min_price_range,
+        "max_price" : max_price_range
     }
     return render(request, 'GroceryApp/shop-grid.html', context)
 
