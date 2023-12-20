@@ -103,7 +103,7 @@ class CartOrder(models.Model):
     price = models.DecimalField(max_digits=14, decimal_places=2, default='0.99', null=True)
     paid_status = models.BooleanField(default=False)
     order_date = models.DateTimeField(auto_now_add=True)
-    product_status = models.CharField(max_length=30, db_collation='Arabic_CI_AI', default='Processing', choices=STATUS_CHOICE)
+    order_status = models.CharField(max_length=30, db_collation='Arabic_CI_AI', default='Processing', choices=STATUS_CHOICE)
 
     class Meta:
         # managed = True
@@ -114,21 +114,36 @@ class CartOrder(models.Model):
 class CartOrderItems(models.Model):
     id = models.BigAutoField(primary_key=True)
     order = models.ForeignKey(CartOrder, models.CASCADE, blank=False, null=False)
-    invoice_number = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
+    invoice_number = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefgh12345")
     product_status = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
-    item = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
-    image = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
+    product = models.ForeignKey(Product, models.CASCADE, blank=True, null=True)
     quantity = models.IntegerField(default=1, blank=True, null=True)
-    price = models.DecimalField(max_digits=14, decimal_places=2, default='0.99', blank=True, null=True)
-    total = models.DecimalField(max_digits=25, decimal_places=2, default='0.99', blank=True, null=True)
+    price = models.DecimalField(max_digits=14, decimal_places=2, blank=True, null=True)
+    total = models.DecimalField(max_digits=25, decimal_places=2, blank=True, null=True)
+    image = models.ImageField(upload_to='cart_order_item_images/', null=True, blank=True)
+
 
     class Meta:
-        # managed = True
-        # db_table = 'groceryapp_cartorderitems'
-        verbose_name_plural = 'Cart Order Items'
+            # managed = True
+            # db_table = 'groceryapp_cartorderitems'
+            verbose_name_plural = 'Cart Order Items'
 
-    def order_image(self):
-        return mark_safe('<img src="/media/%s" width="50" height="50" />' %(self.img))
+    def save(self, *args, **kwargs):
+        if self.product:
+            self.price = self.product.price
+            self.image = self.product.img
+            self.product_status = self.product.product_status
+        else:
+            self.price = 0.0
+            self.image = None
+
+        self.total = self.price * self.quantity
+
+        super(CartOrderItems, self).save(*args, **kwargs)
+    
+
+        def order_image(self):
+            return mark_safe('<img src="/media/%s" width="50" height="50" />' %(self.image))
 
 
 class Wishlist(models.Model):

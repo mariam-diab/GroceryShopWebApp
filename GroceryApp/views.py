@@ -85,8 +85,17 @@ def shop_grid(request, title=None):
 
 @login_required(login_url='/user/login/')
 def shopping_cart(request):
+    cur_user = request.user
+
+    user_shopping_cart = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.id= ct.order_id where co.order_status = 'process' and wl.user_id in (select id from userauths_user where id ='{cur_user.id}')")
+
     categories = Category.objects.raw("select * from GroceryApp_category")
-    return render(request, 'GroceryApp/shoping-cart.html', {"categories":categories})
+
+    context = {
+        "categories" : categories,
+        "user_shopping_cart" : user_shopping_cart,
+    }
+    return render(request, 'GroceryApp/shoping-cart.html', context)
 
 
 @login_required(login_url='/user/login/')
