@@ -239,7 +239,7 @@
                                                 </div>
                                                 <div class="product__discount__item__text">
                                                     <span>{{p.category}}</span>
-                                                    <h5><a href="#">{{p.title}}</a></h5>
+                                                    <h5><a href="{% url 'GroceryApp:shop_details' p.title %}">{{p.title}}</a></h5>
                                                     <div class="product__item__price">${{p.price}} <span>${{p.old_price}}</span></div>
                                                 </div>
                                             </div>
@@ -285,7 +285,7 @@
                                     </ul>
                                 </div>
                                 <div class="product__item__text">
-                                    <h6><a href="#">{{p.title}}</a></h6>
+                                    <h6><a href="{% url 'GroceryApp:shop_details' p.title %}">{{p.title}}</a></h6>
                                     <h5>${{p.price}}</h5>
                                 </div>
                             </div>

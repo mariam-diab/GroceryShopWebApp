@@ -106,7 +106,7 @@
                             </ul>
                         </div>
                         <div class="featured__item__text">
-                            <h6><a href="#">{{ p.title }}</a></h6>
+                            <h6><a href="{% url 'GroceryApp:shop_details' p.title %}">{{ p.title }}</a></h6>
                             <h5>${{ p.price }}</h5>
                         </div>
                     </div>
@@ -150,7 +150,6 @@
                     <div class="latest-product__text">
                         <h4>Latest Products</h4>
                         <div class="latest-product__slider owl-carousel">
-                            
                             <div class="latest-prdouct__slider__item">
                                 {% for p in latest_products|slice:":3" %}
                                 <a href="#" class="latest-product__item">
