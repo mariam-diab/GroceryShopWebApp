@@ -1,16 +1,21 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from GroceryApp.models import *
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+
+
 
 
 # Create your views here.
 def index(request):
-    # products = Product.objects.all().order_by("-id")
-    featured_products = Product.objects.filter(product_status= "published", featured= True)
-    products = Product.objects.all()
-    latest_products = Product.objects.all().order_by("-id")
-    categories = Category.objects.all()
-    rated_products = ProductReviews.objects.all().order_by("-rating")
+    products = Product.objects.raw("select * from GroceryApp_product")
+    featured_products = Product.objects.raw("select * from GroceryApp_product where product_status='published' and featured= 1 ")
+    latest_products = Product.objects.raw("select * from GroceryApp_product order by id desc")
+    categories = Category.objects.raw("select * from GroceryApp_category")
+    rated_products = ProductReviews.objects.raw("select * from GroceryApp_productreviews order by rating desc")
+
 
     context = {
         "featured_products": featured_products,
@@ -63,6 +68,51 @@ def shop_grid(request, title=None):
 def shopping_cart(request):
     categories = Category.objects.raw("select * from GroceryApp_category")
     return render(request, 'GroceryApp/shoping-cart.html', {"categories":categories})
+
+
+@login_required(login_url='/user/login/')
+def wish_list(request):
+    cur_user = request.user
+
+    user_wishlist = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')")
+    products = Product.objects.raw("select * from GroceryApp_product")
+
+    context = {
+        'user_wishlist' : user_wishlist,
+        'products' :products,
+    }
+    return render(request, 'GroceryApp/wish-list.html', context)
+
+
+
+def add_to_wishlist(request):
+    product_id = request.GET['id']
+    product = Product.objects.get(id=product_id)
+    
+    context = {}
+    
+    wishlist_count = Wishlist.objects.filter(product=product, user=request.user).count()
+    print(wishlist_count)
+    
+    if wishlist_count > 0:
+        context = {
+            "bool": True
+        }
+    else:
+        new_wishlist = Wishlist.objects.create(
+            product=product,
+            user=request.user
+        )
+        context = {
+            "bool": True
+        }
+
+    return JsonResponse(context)
+
+
+
+    
+
 
 # from django.db import connection
 # def execute_query(query):
