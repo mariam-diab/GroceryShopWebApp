@@ -28,9 +28,24 @@ def contact(request):
     categories = Category.objects.raw("select * from GroceryApp_category")
     return render(request, 'GroceryApp/contact.html', {"categories":categories})
 
-def shop_details(request):
+def shop_details(request, title):
     categories = Category.objects.raw("select * from GroceryApp_category")
-    return render(request, 'GroceryApp/shop-details.html', {"categories":categories})
+
+    product = Product.objects.raw(f"select P.*, C.title as category_title from GroceryApp_product P \
+                                  left join GroceryApp_category C on P.category_id = C.cid \
+                                  where P.title = '{title}'")[0]
+        
+    product_imgs = ProductImages.objects.raw(f"select id, images from GroceryApp_productimages where product_id = {product.id}")
+
+    related_products = Product.objects.raw(f"select * from GroceryApp_product where category_id = '{product.category_id}'")
+
+    context = {
+        "product" : product,
+        "categories" : categories,
+        "imgs" : product_imgs,
+        "related_products" : related_products,
+    }
+    return render(request, 'GroceryApp/shop-details.html', context)
 
 def shop_grid(request, title=None):
     if title:
