@@ -12,7 +12,10 @@
                             <span>All categories</span>
                         </div>
                         <ul>
-                            <li><a href="#">Fresh Meat</a></li>
+                            {% for c in categories %}
+                            <li><a href="{% url 'GroceryApp:shop_grid' c.title %}">{{c.title}}</a></li>
+                            {% endfor %}
+                            <!-- <li><a href="#">Fresh Meat</a></li>
                             <li><a href="#">Vegetables</a></li>
                             <li><a href="#">Fruit & Nut Gifts</a></li>
                             <li><a href="#">Fresh Berries</a></li>
@@ -22,7 +25,7 @@
                             <li><a href="#">Fresh Onion</a></li>
                             <li><a href="#">Papayaya & Crisps</a></li>
                             <li><a href="#">Oatmeal</a></li>
-                            <li><a href="#">Fresh Bananas</a></li>
+                            <li><a href="#">Fresh Bananas</a></li> -->
                         </ul>
                     </div>
                 </div>
@@ -82,7 +85,7 @@
                             <h4>Category</h4>
                             <ul>
                                 {% for c in categories %}
-                                <li><a href="#">{{c.title}}</a></li>
+                                <li><a href="{% url 'GroceryApp:shop_grid' c.title %}">{{c.title}}</a></li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -103,7 +106,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="sidebar__item sidebar__item__color--option">
+                        <!-- <div class="sidebar__item sidebar__item__color--option">
                             <h4>Colors</h4>
                             <div class="sidebar__item__color sidebar__item__color--white">
                                 <label for="white">
@@ -141,8 +144,8 @@
                                     <input type="radio" id="green">
                                 </label>
                             </div>
-                        </div>
-                        <div class="sidebar__item">
+                        </div> -->
+                        <!-- <div class="sidebar__item">
                             <h4>Popular Size</h4>
                             <div class="sidebar__item__size">
                                 <label for="large">
@@ -168,7 +171,7 @@
                                     <input type="radio" id="tiny">
                                 </label>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="sidebar__item">
                             <div class="latest-product__text">
                                 <h4>Latest Products</h4>

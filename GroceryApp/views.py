@@ -30,8 +30,11 @@ def contact(request):
 def shop_details(request):
     return render(request, 'GroceryApp/shop-details.html')
 
-def shop_grid(request):
-    products = Product.objects.all()
+def shop_grid(request, title=None):
+    if title:
+        products = Product.objects.filter(category__title=title)
+    else:
+        products = Product.objects.all()
     categories = Category.objects.all()
     latest_products = Product.objects.all().order_by("-id")
 
