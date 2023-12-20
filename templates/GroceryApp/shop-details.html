@@ -107,9 +107,12 @@
                         <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
                         <ul>
                             <li><b>Availability</b> 
-                                <span style="{% if product.in_stock %} color:green {% else %} color:red {% endif %}">
-                                {% if product.in_stock %}In Stock{% else %}Out of Stock{% endif %}</span></li>
-                            <li><b>Shipping</b> <span>01 day shipping. <samp>Free pickup today</samp></span></li>
+                                {% if product.in_stock %}
+                                    <span style="color:green">In Stock</span>
+                                {% else %} 
+                                    <span style="color:red">Out of Stock</span>
+                                {% endif %}"
+                            <!-- <li><b>Shipping</b> <span>01 day shipping. <samp>Free pickup today</samp></span></li> -->
                             <!-- <li><b>Weight</b> <span>0.5 kg</span></li> -->
                             <li><b>Share on</b>
                                 <div class="share">
