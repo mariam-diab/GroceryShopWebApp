@@ -12,5 +12,4 @@ urlpatterns = [
     path("shopping_cart",shopping_cart, name= "shopping_cart"),
     path("shop_grid/<str:title>/", shop_grid, name="shop_grid"),
     path("wish_list", wish_list, name= "wish_list"),
-    path("add_to_wishlist", add_to_wishlist, name= "add_to_wishlist"),
     ]

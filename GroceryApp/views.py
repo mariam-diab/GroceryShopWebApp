@@ -4,6 +4,8 @@ from GroceryApp.models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
+
 
 
 
@@ -65,6 +67,8 @@ def shop_grid(request, title=None):
     }
     return render(request, 'GroceryApp/shop-grid.html', context)
 
+
+@login_required(login_url='/user/login/')
 def shopping_cart(request):
     categories = Category.objects.raw("select * from GroceryApp_category")
     return render(request, 'GroceryApp/shoping-cart.html', {"categories":categories})
@@ -82,45 +86,4 @@ def wish_list(request):
         'products' :products,
     }
     return render(request, 'GroceryApp/wish-list.html', context)
-
-
-
-def add_to_wishlist(request):
-    product_id = request.GET['id']
-    product = Product.objects.get(id=product_id)
-    
-    context = {}
-    
-    wishlist_count = Wishlist.objects.filter(product=product, user=request.user).count()
-    print(wishlist_count)
-    
-    if wishlist_count > 0:
-        context = {
-            "bool": True
-        }
-    else:
-        new_wishlist = Wishlist.objects.create(
-            product=product,
-            user=request.user
-        )
-        context = {
-            "bool": True
-        }
-
-    return JsonResponse(context)
-
-
-
-    
-
-
-# from django.db import connection
-# def execute_query(query):
-#     with connection.cursor() as cursor:
-#         cursor.execute(query)
-#         return cursor.fetchall()
-
-
-
-
 
