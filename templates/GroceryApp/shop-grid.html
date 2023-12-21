@@ -32,12 +32,12 @@
                 <div class="col-lg-9">
                     <div class="hero__search">
                         <div class="hero__search__form">
-                            <form action="#">
+                            <form action="{% url 'GroceryApp:shop_grid_search' product='placeholder_value' %}">
                                 <!-- <div class="hero__search__categories">
                                     All Categories
                                     <span class="arrow_carrot-down"></span>
                                 </div> -->
-                                <input type="text" placeholder="What do yo u need?">
+                                <input type="text" name="product" placeholder="What do you need?">
                                 <button type="submit" class="site-btn">SEARCH</button>
                             </form>
                         </div>
@@ -239,7 +239,7 @@
                                                 </div>
                                                 <div class="product__discount__item__text">
                                                     <span>{{p.category}}</span>
-                                                    <h5><a href="#">{{p.title}}</a></h5>
+                                                    <h5><a href="{% url 'GroceryApp:shop_details' p.title %}">{{p.title}}</a></h5>
                                                     <div class="product__item__price">${{p.price}} <span>${{p.old_price}}</span></div>
                                                 </div>
                                             </div>
@@ -285,11 +285,19 @@
                                     </ul>
                                 </div>
                                 <div class="product__item__text">
-                                    <h6><a href="#">{{p.title}}</a></h6>
+                                    <h6><a href="{% url 'GroceryApp:shop_details' p.title %}">{{p.title}}</a></h6>
                                     <h5>${{p.price}}</h5>
                                 </div>
                             </div>
                         </div>
+                        {% empty %}
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                                <div class="product__item">
+                                    <div class="product__item__text">
+                                        <h6>No available products</h6>
+                                    </div>
+                                </div>
+                            </div>
                         {% endfor %}
                         
                     </div>
