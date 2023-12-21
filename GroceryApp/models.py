@@ -98,7 +98,7 @@ STATUS_CHOICE = (
     ("delivered", "Delivered"),
 )
 class CartOrder(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    ct_ord_id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(User, models.CASCADE, blank=False, null=False)
     price = models.DecimalField(max_digits=14, decimal_places=2, default='0.99', null=True)
     paid_status = models.BooleanField(default=False)
@@ -112,7 +112,7 @@ class CartOrder(models.Model):
 
 
 class CartOrderItems(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    ct_ord_it_id = models.BigAutoField(primary_key=True)
     order = models.ForeignKey(CartOrder, models.CASCADE, blank=False, null=False)
     invoice_number = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefgh12345")
     product_status = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)

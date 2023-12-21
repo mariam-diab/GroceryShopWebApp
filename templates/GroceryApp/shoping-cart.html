@@ -80,7 +80,7 @@
 <script src="{% static 'js/js.cookie.js' %}"></script>
     <!-- Shoping Cart Section Begin -->
     <section class="shoping-cart spad">
-        {% for p in user_shopping_cart %}
+        
         <div class="container">
 
             <div class="row">
@@ -97,7 +97,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+                                {% for p in user_shopping_cart %}
                                 <!-- {{ p.order_id }} -->
                                 <tr>
                                     <td class="shoping__cart__item">
@@ -110,7 +110,7 @@
                                     <td class="shoping__cart__quantity">
                                         <div class="quantity">
                                             <div class="pro-qty">
-                                                <input type="text" value="{{ p.quantity }}" data-order-id="{{ p.order_id }}">
+                                                <input type="text" value="{{ p.quantity }}" data-order-id="{{ p.order_id }}" data-product-id ={{p.id}}>
                                             </div>
                                         </div>
                                     </td>
@@ -121,6 +121,7 @@
                                         <span class="icon_close"></span>
                                     </td>
                                 </tr>
+                                {% endfor %}
                             
                             </tbody>
                         </table>
@@ -143,23 +144,16 @@
 
                         <script>
                             $(document).ready(function () {
-                                $("#update-cart-form").on("submit", function (event) {
-                                    event.preventDefault();
-                        
-                                    console.log("Form submitted");
-                        
+                                // Function to update the cart
+                                function updateCart() {
                                     var csrfToken = Cookies.get('csrftoken');
-                        
-                                    // Disable the button and show loading spinner
-                                    $("#update-cart-button").prop("disabled", true);
-                                    $(".icon_loading").show();
-                                    $("#button-text").text("Updating...");
                         
                                     $(".shoping__cart__table tbody tr").each(function () {
                                         var row = $(this);
                                         var quantityInput = row.find(".pro-qty input");
                                         var orderId = quantityInput.data("order-id");
                                         var newQuantity = quantityInput.val();
+                                        var productId = row.find(".pro-qty input").data("product-id");
                         
                                         $.ajax({
                                             method: "POST",
@@ -167,21 +161,22 @@
                                             data: {
                                                 order_id: orderId,
                                                 new_quantity: newQuantity,
+                                                product_id : productId,
                                             },
                                             headers: {
                                                 "X-CSRFToken": csrfToken,
                                             },
                                             success: function (data) {
                                                 console.log("Order updated successfully");
+
+                                                updateTotalPrice();
                         
-                                                // Update the total price for the item
                                                 var totalPriceElement = row.find(".shoping__cart__total");
                                                 var unitPrice = parseFloat(row.find(".shoping__cart__price").text().replace('$', ''));
                                                 var newTotalPrice = unitPrice * newQuantity;
                         
                                                 totalPriceElement.text("$" + newTotalPrice.toFixed(2));
                         
-                                                // Check if the new quantity is zero, then remove the row
                                                 if (newQuantity == 0) {
                                                     row.remove();
                                                 } else {
@@ -193,7 +188,6 @@
                                                 console.log("CSRF Token:", csrfToken);
                                             },
                                             complete: function () {
-                                                // Re-enable the button and hide loading spinner
                                                 setTimeout(function () {
                                                     $("#update-cart-button").prop("disabled", false);
                                                     $(".icon_loading").hide();
@@ -202,6 +196,25 @@
                                             },
                                         });
                                     });
+                                }
+                        
+                                // Trigger the update when the document is ready
+                                updateCart();
+                        
+                                // Add event listener for the update button
+                                $("#update-cart-form").on("submit", function (event) {
+                                    event.preventDefault();
+                                    console.log("Form submitted");
+                        
+                                    var csrfToken = Cookies.get('csrftoken');
+                        
+                                    $("#update-cart-button").prop("disabled", true);
+                                    $(".icon_loading").show();
+                                    $("#button-text").text("Updating...");
+                        
+                                    updateCart();  // Call the updateCart function
+                                    updateTotalPrice();  
+                        
                                 });
                         
                                 // Add event listener for the close button
@@ -209,39 +222,57 @@
                                     var csrfToken = Cookies.get('csrftoken');
                                     var row = $(this).closest("tr");
                                     var orderId = row.find(".pro-qty input").data("order-id");
+                                    var productId = row.find(".pro-qty input").data("product-id");
                         
-                                    // Use AJAX to remove the item from the database
                                     $.ajax({
                                         method: "POST",
                                         url: "/remove_order/",
                                         data: {
                                             order_id: orderId,
+                                            product_id :productId,
+
                                         },
                                         headers: {
                                             "X-CSRFToken": csrfToken,
                                         },
                                         success: function (data) {
                                             console.log("Item removed successfully from the database", data);
-
-                                            // Remove the row from the table
                                             row.remove();
                                         },
                                         error: function (xhr, textStatus, errorThrown) {
                                             console.error("Error removing item", xhr, textStatus, errorThrown);
                                             console.log("CSRF Token:", csrfToken);
                                         },
-
                                     });
                                 });
+                                function updateTotalPrice() {
+                                $.ajax({
+                                    method: "GET",
+                                    url: "/calculate_total_price/",  // Replace with your Django view URL
+                                    success: function (data) {
+                                        var total_price_element = $("#total-price span");
+                                        var newTotalPrice = parseFloat(data.total_price_view);
+
+                                        if (!isNaN(newTotalPrice)) {
+                                            total_price_element.text("$" + newTotalPrice.toFixed(2));
+                                        } else {
+                                            console.error("Invalid total price received from the server");
+                                        }
+                                    },
+                                    error: function (error) {
+                                        console.error("Error updating total price", error);
+                                    },
+                                });
+                            }
+
                             });
                         </script>
                         
-                            
                         
 
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <!-- <div class="col-lg-6">
                     <div class="shoping__continue">
                         <div class="shoping__discount">
                             <h5>Discount Codes</h5>
@@ -251,20 +282,20 @@
                             </form>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-6">
+                </div> -->
+                <div class="col-lg-6 offset-lg-6">
                     <div class="shoping__checkout">
                         <h5>Cart Total</h5>
+                       
                         <ul>
-                            <li>Subtotal <span>$454.98</span></li>
-                            <li>Total <span>$454.98</span></li>
+                            <li id="total-price">Total Price <span>${{ total_price }}</span></li>
                         </ul>
                         <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
                     </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
+        
     </section>
     <!-- Shoping Cart Section End -->
 

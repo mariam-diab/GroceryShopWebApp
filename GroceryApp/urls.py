@@ -14,4 +14,5 @@ urlpatterns = [
     path("wish_list", wish_list, name= "wish_list"),
     path('update_order/', update_order, name='update_order'),
     path('remove_order/', remove_order, name='remove_order'),
+    path('calculate_total_price/', calculate_total_price, name='calculate_total_price'),
     ]

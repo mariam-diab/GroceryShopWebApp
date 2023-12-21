@@ -45,7 +45,7 @@ $(document).ready(function () {
                 },
             });
         });
-        $(".delete-item").on("click", function () {
+         $(".delete-item").on("click", function () {
             var orderId = $(this).data("order-id");
             var row = $(this).closest("tr");
 
