@@ -114,7 +114,7 @@ class CartOrder(models.Model):
 class CartOrderItems(models.Model):
     ct_ord_it_id = models.BigAutoField(primary_key=True)
     order = models.ForeignKey(CartOrder, models.CASCADE, blank=False, null=False)
-    invoice_number = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefgh12345")
+    invoice_number = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefgh12345", null = True)
     product_status = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
     product = models.ForeignKey(Product, models.CASCADE, blank=True, null=True)
     quantity = models.IntegerField(default=1, blank=True, null=True)
