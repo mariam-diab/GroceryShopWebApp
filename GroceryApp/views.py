@@ -13,11 +13,12 @@ from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
 def index(request):
     products = Product.objects.raw("select * from GroceryApp_product")
-    featured_products = Product.objects.raw("select * from GroceryApp_product where product_status='published' and featured= 1 ")
-    latest_products = Product.objects.raw("select * from GroceryApp_product order by id desc")
+    featured_products = Product.objects.raw("select P.*, C.title as category_title from GroceryApp_product P \
+                                            left join GroceryApp_category C on P.category_id = C.cid \
+                                            where P.product_status='published' and P.featured= 1 ")
+    latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
     categories = Category.objects.raw("select * from GroceryApp_category")
     rated_products = ProductReviews.objects.raw("select * from GroceryApp_productreviews order by rating desc")
-
 
     context = {
         "featured_products": featured_products,
