@@ -1,12 +1,10 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from GroceryApp.models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
-
-
+from django.db import connection
 
 
 
@@ -134,7 +132,7 @@ def shopping_cart(request):
 def wish_list(request):
     cur_user = request.user
 
-    user_wishlist = f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')"
+    user_wishlist = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')")
     products = Product.objects.raw("select * from GroceryApp_product")
 
     context = {
@@ -145,12 +143,7 @@ def wish_list(request):
 
 
 
-from django.http import JsonResponse
-from django.db import transaction
 
-
-import traceback  # Add this import at the beginning of your views.py file
-from django.db import connection, transaction
 
 def update_order(request):
     if request.method == 'POST':
@@ -158,8 +151,6 @@ def update_order(request):
             order_id = request.POST.get("order_id")
             new_quantity = request.POST.get("new_quantity")
             product_id = request.POST.get("product_id")
-
-        
             print(f"New Quantity: {new_quantity}")
             print(f"order_id: {order_id}")
             query = f"update GroceryApp_cartorderitems set quantity = {new_quantity} where order_id = {order_id} and product_id = {product_id}"
@@ -167,22 +158,15 @@ def update_order(request):
             with connection.cursor() as cursor:
                 cursor.execute(query)
 
-     
-
             response_data = {'status': 'success', 'message': 'Order updated successfully'}
             return JsonResponse(response_data)
-    
 
         except Exception as e:
-            # Log the exception for debugging purposes
             print(f"Error updating order: {e}")
-
-            # Return an error JSON response
             response_data = {'status': 'error', 'message': 'Failed to update order'}
             return JsonResponse(response_data, status=500)
 
     else:
-        # Return a method not allowed JSON response for non-POST requests
         response_data = {'status': 'error', 'message': 'Method Not Allowed'}
         return JsonResponse(response_data, status=405)
     
@@ -190,30 +174,66 @@ def remove_order(request):
     if request.method == 'POST':
         try:
             order_id = request.POST.get("order_id")
-            product_id = request.POST.get("product_id")
-        
+            product_id = request.POST.get("product_id")        
             print(f"order_id: {order_id}")
             print(f"product_id: {product_id}")
             query = f"update GroceryApp_cartorderitems set quantity = {0} where order_id = {order_id} and product_id ={product_id}"
 
             with connection.cursor() as cursor:
                 cursor.execute(query)
-
     
             response_data = {'status': 'success', 'message': 'Order updated successfully'}
             return JsonResponse(response_data)
     
 
         except Exception as e:
-            # Log the exception for debugging purposes
             print(f"Error updating order: {e}")
-
-            # Return an error JSON response
             response_data = {'status': 'error', 'message': 'Failed to update order'}
             return JsonResponse(response_data, status=500)
 
     else:
-        # Return a method not allowed JSON response for non-POST requests
         response_data = {'status': 'error', 'message': 'Method Not Allowed'}
         return JsonResponse(response_data, status=405)
     
+
+    
+def add_to_cart(request, product_id):
+    cur_user = request.user
+
+    product = Product.objects.raw(f"select * from GroceryApp_product where id = {product_id}")
+    query = f"select count(*) from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.ct_ord_id= ct.order_id where p.id = {product_id} and co.order_status = 'process' and ct.quantity >0 and co.user_id in (select id from userauths_user where id ='{cur_user.id}')"
+
+    title_query = f"select title from GroceryApp_product where id = {product_id}"
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        cnt = cursor.fetchone()[0]
+
+    with connection.cursor() as cursor:
+        cursor.execute(title_query)
+        p_title = cursor.fetchone()[0]
+    
+
+    if (cnt>0):
+        return redirect('GroceryApp:shop_details', title=p_title)
+    
+    check_for_order_query = f"select count(*) from GroceryApp_cartorder where user_id= {cur_user.id}"
+
+    with connection.cursor() as cursor:
+        cursor.execute(check_for_order_query)
+        orders_cnt = cursor.fetchone()[0]
+
+    if (orders_cnt==0):
+        cart_order_inst = CartOrder(user_id = cur_user.id, order_status = 'processing')
+        cart_order_inst.save()
+
+    cart_order_query = f"SELECT ct_ord_id FROM GroceryApp_cartorder WHERE user_id={cur_user.id}"
+
+    with connection.cursor() as cursor:
+        cursor.execute(cart_order_query)
+        cart_order = cursor.fetchone()[0]
+
+    cart_order_item = CartOrderItems(order_id=cart_order, product_id=product_id)
+    cart_order_item.save()
+
+    return redirect('GroceryApp:shopping_cart')
