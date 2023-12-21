@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.core.paginator import Paginator
+
 
 
 
@@ -56,17 +58,16 @@ def shop_details(request, title):
     return render(request, 'GroceryApp/shop-details.html', context)
 
 def shop_grid(request, product=None, category=None):
+    category = request.GET.get('category') or "All"
+    print(category)
     product = request.GET.get('product', '')
     if product:
         products = Product.objects.raw("select * from GroceryApp_product where title like %s", ['%' + product + '%'])
-    elif category:
+    elif category != "All":
         products = Product.objects.raw(f"select * from GroceryApp_product where category_id in (select cid FROM GroceryApp_category where title = '{category}')")
     else:
         products = Product.objects.raw(f"select * from GroceryApp_product") 
-   
-    
-    min_price_range = min((p.price for p in products), default=0)
-    max_price_range = max((p.price for p in products), default=0)
+    print(products)
 
         
     categories = Category.objects.raw("select * from GroceryApp_category")
@@ -78,12 +79,22 @@ def shop_grid(request, product=None, category=None):
     if min_price and max_price:
         products = Product.objects.raw(f"select * from GroceryApp_product where price between {min_price} and {max_price}")
 
+    min_price_range = min((p.price for p in products), default=0)
+    max_price_range = max((p.price for p in products), default=0)
+
+    paginator = Paginator(products, 6) 
+    page_number = request.GET.get('page')
+    paginated_products = paginator.get_page(page_number) 
+    print(category)
+
     context = {
         "products" : products,
         "categories" : categories,
         "latest_products" : latest_products,
         "min_price" : min_price_range,
-        "max_price" : max_price_range
+        "max_price" : max_price_range,
+        "paginated_products" : paginated_products,
+        "category" : category,
     }
     return render(request, 'GroceryApp/shop-grid.html', context)
 
