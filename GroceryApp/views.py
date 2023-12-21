@@ -54,14 +54,18 @@ def shop_details(request, title):
     }
     return render(request, 'GroceryApp/shop-details.html', context)
 
-def shop_grid(request, title=None):
-    if title:
-        products = Product.objects.raw(f"select * from GroceryApp_product where category_id in (select cid FROM GroceryApp_category where title = '{title}')")
+def shop_grid(request, product=None, category=None):
+    product = request.GET.get('product', '')
+    if product:
+        products = Product.objects.raw("select * from GroceryApp_product where title like %s", ['%' + product + '%'])
+    elif category:
+        products = Product.objects.raw(f"select * from GroceryApp_product where category_id in (select cid FROM GroceryApp_category where title = '{category}')")
     else:
-        products = Product.objects.raw(f"select * from GroceryApp_product")    
+        products = Product.objects.raw(f"select * from GroceryApp_product") 
+   
     
-    min_price_range = min(p.price for p in products)
-    max_price_range = max(p.price for p in products)
+    min_price_range = min((p.price for p in products), default=0)
+    max_price_range = max((p.price for p in products), default=0)
 
         
     categories = Category.objects.raw("select * from GroceryApp_category")
