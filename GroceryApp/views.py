@@ -38,7 +38,8 @@ def contact(request):
     categories = Category.objects.raw("select * from GroceryApp_category")
     return render(request, 'GroceryApp/contact.html', {"categories":categories})
 
-def shop_details(request, title):
+def shop_details(request):
+    title = request.GET.get('title', None)
     categories = Category.objects.raw("select * from GroceryApp_category")
 
     product = Product.objects.raw(f"select P.*, C.title as category_title from GroceryApp_product P \
@@ -57,9 +58,8 @@ def shop_details(request, title):
     }
     return render(request, 'GroceryApp/shop-details.html', context)
 
-def shop_grid(request, product=None, category=None):
+def shop_grid(request):
     category = request.GET.get('category') or "All"
-    print(category)
     product = request.GET.get('product', '')
     if product:
         products = Product.objects.raw("select * from GroceryApp_product where title like %s", ['%' + product + '%'])
@@ -67,7 +67,6 @@ def shop_grid(request, product=None, category=None):
         products = Product.objects.raw(f"select * from GroceryApp_product where category_id in (select cid FROM GroceryApp_category where title = '{category}')")
     else:
         products = Product.objects.raw(f"select * from GroceryApp_product") 
-    print(products)
 
         
     categories = Category.objects.raw("select * from GroceryApp_category")
@@ -85,7 +84,6 @@ def shop_grid(request, product=None, category=None):
     paginator = Paginator(products, 6) 
     page_number = request.GET.get('page')
     paginated_products = paginator.get_page(page_number) 
-    print(category)
 
     context = {
         "products" : products,

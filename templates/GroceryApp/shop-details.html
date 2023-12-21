@@ -14,7 +14,7 @@
                         </div>
                         <ul>
                             {% for c in categories %}
-                            <li><a href="{% url 'GroceryApp:shop_grid' c.title %}">{{c.title}}</a></li>
+                            <li><a href="% url 'GroceryApp:shop_grid' %}?category={{ c.title }}">{{c.title}}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -22,7 +22,7 @@
                 <div class="col-lg-9">
                     <div class="hero__search">
                         <div class="hero__search__form">
-                            <form action="{% url 'GroceryApp:shop_grid_search' product='placeholder_value' %}">
+                            <form action="{% url 'GroceryApp:shop_grid' %}?product={{ placeholder_value }}">
                                 <!-- <div class="hero__search__categories">
                                     All Categories
                                     <span class="arrow_carrot-down"></span>
@@ -56,7 +56,7 @@
                         <h2>{{product.title}}</h2>
                         <div class="breadcrumb__option">
                             <a href="{% url 'GroceryApp:Home' %}">Home</a>
-                            <a href="{% url 'GroceryApp:shop_grid' product.category_title %}">{{product.category_title}}</a>
+                            <a href="{% url 'GroceryApp:shop_grid' %}?category={{ product.category_title }}">{{product.category_title}}</a>
                             <span>{{product.title}}</span>
                         </div>
                     </div>
@@ -215,7 +215,7 @@
                             </ul>
                         </div>
                         <div class="product__item__text">
-                            <h6><a href="{% url 'GroceryApp:shop_details' p.title %}">{{p.title}}</a></h6>
+                            <h6><a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}">{{p.title}}</a></h6>
                             <h5>${{p.price}}</h5>
                         </div>
                     </div>
