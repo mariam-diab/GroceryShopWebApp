@@ -1,0 +1,79 @@
+$(document).ready(function () {
+    $("#update-cart-form").on("submit", function (event) {
+        event.preventDefault();
+
+        console.log("Form submitted");
+
+        var csrfToken = Cookies.get('csrftoken');
+
+        // Disable the button and show loading spinner
+        $("#update-cart-button").prop("disabled", true);
+        $(".icon_loading").show();
+        $("#button-text").text("Updating...");
+
+        $(".shoping__cart__table tbody tr").each(function () {
+            var row = $(this);
+            var quantityInput = row.find(".pro-qty input");
+            var orderId = quantityInput.data("order-id");
+            var newQuantity = quantityInput.val();
+
+            $.ajax({
+                method: "POST",
+                url: "/update_order/",
+                data: {
+                    order_id: orderId,
+                    new_quantity: newQuantity,
+                },
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                },
+                success: function (data) {
+                    console.log("Order updated successfully");
+                    row.find(".shoping__cart__quantity input").val(newQuantity);
+                },
+                error: function (error) {
+                    console.error("Error updating order", error);
+                    console.log("CSRF Token:", csrfToken);
+                },
+                complete: function () {
+                    // Re-enable the button and hide loading spinner
+                    setTimeout(function () {
+                        $("#update-cart-button").prop("disabled", false);
+                        $(".icon_loading").hide();
+                        $("#button-text").text("Update Cart");
+                    }, 200);
+                },
+            });
+        });
+        $(".delete-item").on("click", function () {
+            var orderId = $(this).data("order-id");
+            var row = $(this).closest("tr");
+
+            // Send AJAX request to update quantity to 0 or remove the item
+            $.ajax({
+                method: "POST",
+                url: "/update_order/",
+                data: {
+                    order_id: orderId,
+                    new_quantity: 0,  // Set the quantity to 0 to remove the item
+                },
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                },
+                success: function (data) {
+                    console.log("Order updated successfully");
+
+                    // Remove the corresponding table row
+                    row.remove();
+                },
+                error: function (error) {
+                    console.error("Error updating order", error);
+                    console.log("CSRF Token:", csrfToken);
+                },
+                complete: function () {
+                    // Additional cleanup if needed
+                },
+            });
+    });
+    
+});

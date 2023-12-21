@@ -87,7 +87,7 @@ def shop_grid(request, title=None):
 def shopping_cart(request):
     cur_user = request.user
 
-    user_shopping_cart = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.id= ct.order_id where co.order_status = 'process' and wl.user_id in (select id from userauths_user where id ='{cur_user.id}')")
+    user_shopping_cart = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.id= ct.order_id where co.order_status = 'process' and ct.quantity >0 and co.user_id in (select id from userauths_user where id ='{cur_user.id}')")
 
     categories = Category.objects.raw("select * from GroceryApp_category")
 
@@ -111,3 +111,74 @@ def wish_list(request):
     }
     return render(request, 'GroceryApp/wish-list.html', context)
 
+
+
+from django.http import JsonResponse
+from django.db import transaction
+
+
+import traceback  # Add this import at the beginning of your views.py file
+from django.db import connection, transaction
+
+def update_order(request):
+    if request.method == 'POST':
+        try:
+            order_id = request.POST.get("order_id")
+            new_quantity = request.POST.get("new_quantity")
+
+        
+            print(f"New Quantity: {new_quantity}")
+            print(f"order_id: {order_id}")
+            query = f"update GroceryApp_cartorderitems set quantity = {new_quantity} where order_id = {order_id}"
+
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+
+     
+
+            response_data = {'status': 'success', 'message': 'Order updated successfully'}
+            return JsonResponse(response_data)
+    
+
+        except Exception as e:
+            # Log the exception for debugging purposes
+            print(f"Error updating order: {e}")
+
+            # Return an error JSON response
+            response_data = {'status': 'error', 'message': 'Failed to update order'}
+            return JsonResponse(response_data, status=500)
+
+    else:
+        # Return a method not allowed JSON response for non-POST requests
+        response_data = {'status': 'error', 'message': 'Method Not Allowed'}
+        return JsonResponse(response_data, status=405)
+    
+def remove_order(request):
+    if request.method == 'POST':
+        try:
+            order_id = request.POST.get("order_id")
+        
+            print(f"order_id: {order_id}")
+            query = f"update GroceryApp_cartorderitems set quantity = {0} where order_id = {order_id}"
+
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+
+    
+            response_data = {'status': 'success', 'message': 'Order updated successfully'}
+            return JsonResponse(response_data)
+    
+
+        except Exception as e:
+            # Log the exception for debugging purposes
+            print(f"Error updating order: {e}")
+
+            # Return an error JSON response
+            response_data = {'status': 'error', 'message': 'Failed to update order'}
+            return JsonResponse(response_data, status=500)
+
+    else:
+        # Return a method not allowed JSON response for non-POST requests
+        response_data = {'status': 'error', 'message': 'Method Not Allowed'}
+        return JsonResponse(response_data, status=405)
+    
