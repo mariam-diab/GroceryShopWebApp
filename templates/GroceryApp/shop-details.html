@@ -14,7 +14,7 @@
                         </div>
                         <ul>
                             {% for c in categories %}
-                            <li><a href="% url 'GroceryApp:shop_grid' %}?category={{ c.title }}">{{c.title}}</a></li>
+                            <li><a href="{% url 'GroceryApp:shop_grid' %}?category={{ c.title }}">{{c.title}}</a></li>
                             {% endfor %}
                         </ul>
                     </div>

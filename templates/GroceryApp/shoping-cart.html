@@ -14,7 +14,7 @@
                         </div>
                         <ul>
                             {% for c in categories %}
-                            <li><a href="{% url 'GroceryApp:shop_grid' c.title %}">{{c.title}}</a></li>
+                            <li><a href="{% url 'GroceryApp:shop_grid' %}?title={{ c.title }}">{{c.title}}</a></li>
                             {% endfor %}
                             <!-- <li><a href="#">Fresh Meat</a></li>
                             <li><a href="#">Vegetables</a></li>
@@ -33,7 +33,7 @@
                 <div class="col-lg-9">
                     <div class="hero__search">
                         <div class="hero__search__form">
-                            <form action="{% url 'GroceryApp:shop_grid_search' product='placeholder_value' %}">
+                            <form action="{% url 'GroceryApp:shop_grid' %}?product={{ placeholder_value }}">
                                 <!-- <div class="hero__search__categories">
                                     All Categories
                                     <span class="arrow_carrot-down"></span>
