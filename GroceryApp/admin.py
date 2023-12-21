@@ -20,10 +20,10 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductImages)
 
 class CartOrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'price', 'paid_status', 'order_date', 'product_status']
+    list_display = ['user', 'price', 'paid_status', 'order_date', 'order_status']
 
 class CartOrderItemsAdmin(admin.ModelAdmin):
-    list_display = ['order', 'invoice_number', 'item', 'image', 'quantity', 'price', 'total']  
+    list_display = ['order', 'invoice_number', 'product', 'image', 'quantity', 'price', 'total']  
 
 class WishlistAdmin(admin.ModelAdmin):
     list_display = ['user', 'product', 'date']     
