@@ -20,7 +20,7 @@ class Category(models.Model):
         return self.title
     
 STATUS_CHOICE = (
-    ("process", "Processing"),
+    ("processing", "Processing"),
     ("shipped", "Shipped"),
     ("delivered", "Delivered"),
 )
@@ -93,7 +93,7 @@ class ProductImages(models.Model):
         verbose_name_plural = "Product Images"
 
 STATUS_CHOICE = (
-    ("process", "Processing"),
+    ("processing", "Processing"),
     ("shipped", "Shipped"),
     ("delivered", "Delivered"),
 )
