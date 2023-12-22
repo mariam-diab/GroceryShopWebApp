@@ -3,6 +3,13 @@
 
 {% block content %}
     <!-- Hero Section Begin -->
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <section class="hero hero-normal">
         <div class="container">
             <div class="row">
@@ -99,11 +106,56 @@
                         <div class="product__details__quantity">
                             <div class="quantity">
                                 <div class="pro-qty">
-                                    <input type="text" value="1">
+                                    <input type="text" id="quantityInput" value="1">
                                 </div>
                             </div>
                         </div>
-                        <a href="#" class="primary-btn">ADD TO CARD</a>
+                        
+                        <form id="add-to-cart-form" method="post" action="">
+                            {% csrf_token %}
+                            <input type="hidden" id="product-id" name="product_id" value="{{ product.id }}">
+                            <input type="hidden" id="product-title" name="product_title" value="{{ product.title }}">
+                            <input type="hidden" id="product-price" name="product_price" value="{{ product.price }}">
+                            
+                            <button type="button" class="primary-btn cart-btn cart-btn-right add-to-cart-btn" id="add-to-cart-button">
+                                <span class="icon_loading" style="display: none;"></span> 
+                                <span id="button-text">ADD TO CART</span>
+                            </button>
+                        </form>
+                        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+                        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+                        <script src="{% static 'js/js.cookie.js' %}"></script>
+                        <script>
+                            document.getElementById('add-to-cart-button').addEventListener('click', function() {
+                                var csrfToken = Cookies.get('csrftoken');
+                                var quantity = document.getElementById('quantityInput').value;
+                                var productId = document.getElementById('product-id').value;
+                                var productTitle = document.getElementById('product-title').value;
+                                var productPrice = document.getElementById('product-price').value;
+                        
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/add_to_cart/',
+                                    data: {
+                                        'id': productId,
+                                        'qty': quantity,
+                                        'title': productTitle,
+                                        'price': productPrice,
+                                        csrfmiddlewaretoken: csrfToken,  // Include CSRF token
+                                    },
+                                    success: function(data) {
+                                        console.log("Added to cart successfully");
+                                        // Redirect to the shopping cart page
+                                        window.location.href = '/shopping_cart';
+                                    },
+                                    error: function(error) {
+                                        console.error("Error adding to cart", error);
+                                        // Handle errors here
+                                    }
+                                });
+                            });
+                        </script>
+                        
                         <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
                         <ul>
                             <li><b>Availability</b> 
