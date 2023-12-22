@@ -28,13 +28,13 @@ class CartOrderItemsAdmin(admin.ModelAdmin):
 class WishlistAdmin(admin.ModelAdmin):
     list_display = ['user', 'product', 'date']     
 
-class AddressAdmin(admin.ModelAdmin):
-    list_display = ['user', 'address', 'status']  
+class BillingDetailsAdmin(admin.ModelAdmin):
+    list_display = ['user', 'address', 'delivered_status']  
 
 admin.site.register(CartOrder, CartOrderAdmin)
 admin.site.register(CartOrderItems, CartOrderItemsAdmin)
 admin.site.register(Wishlist, WishlistAdmin)
-admin.site.register(Address, AddressAdmin)
+admin.site.register(BillingDetails, BillingDetailsAdmin)
 
 
 class ProductReviewsAdmin(admin.ModelAdmin):

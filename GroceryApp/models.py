@@ -161,17 +161,28 @@ class Wishlist(models.Model):
         return self.product.title
 
 
-class Address(models.Model):
+class BillingDetails(models.Model):
     id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(User, models.SET_NULL, blank=False, null=True)
+    order = models.ForeignKey(CartOrder, models.SET_NULL, blank=False, null=True)
+    first_name = models.CharField(max_length=23)
+    last_name = models.CharField(max_length=23)
     address = models.CharField(max_length=100, db_collation='Arabic_CI_AI')
-    status = models.BooleanField(default=False)
+    apartment = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=False, null=True)
+    governorate = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=False, null=True)
+    city = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=False, null=True)
+    zip = models.CharField(max_length=10)
+    phone = models.CharField(max_length=20, db_collation='Arabic_CI_AI', blank=False, null=True)
+    email = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=False, null=True)
+    payment_method = models.CharField(max_length=50, db_collation='Arabic_CI_AI', blank=False, null=True)
+    payment_status = models.BooleanField(blank=False, null=False)
+    to_be_paid = models.DecimalField(max_digits=20, decimal_places=2, default= 0)
+    delivered_status = models.BooleanField(default=False)
 
     class Meta:
         # managed = True
-        # db_table = 'groceryapp_address'
-        verbose_name_plural = 'Address'
-
+        # db_table = 'GroceryApp_BillingDetails'
+        verbose_name_plural = 'Billing Details'
 
 class ProductReviews(models.Model):
     user = models.ForeignKey(User, models.SET_NULL, blank=False, null=True)

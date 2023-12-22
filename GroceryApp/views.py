@@ -32,8 +32,57 @@ def index(request):
     }
     return render(request, 'GroceryApp/index.html', context)
 
+@login_required(login_url='/user/login/')
 def checkout(request):
-    return render(request, 'GroceryApp/checkout.html')
+    cur_user = request.user
+    sub_total_price = total_price_calc(cur_user)
+    if not sub_total_price:
+        return render(request, 'GroceryApp/shoping-cart.html')
+    total_price = sub_total_price if sub_total_price >= 99 else sub_total_price + 50
+    if request.method == "GET":
+        cart_items = CartOrder.objects.raw(f"select Co.ct_ord_id, CI.ct_ord_it_id, P.id, P.title, CI.total from GroceryApp_cartorder Co \
+                                                    left join  GroceryApp_cartorderitems CI \
+                                                    on Co.ct_ord_id = CI.order_id \
+                                                    left join GroceryApp_product P \
+                                                    on P.id = CI.product_id \
+                                                    where Co.order_status = 'process' and \
+                                                    CO.user_id = '{cur_user.id}'")
+        context = {
+            "user" : cur_user,
+            "items" : cart_items,
+            "sub_total_price" : sub_total_price, 
+            "total_price" : total_price,
+            "order_id" : cart_items[0].ct_ord_id if total_price else 0
+        }
+        return render(request, 'GroceryApp/checkout.html', context)
+    elif request.method == "POST":
+        order_id = request.POST.get('order_id')
+        data = {key: request.POST.get(key) for key in request.POST.keys()}
+        if data['payment_method'] == "paypal":  
+            to_be_paid = 0 
+            payment_status = 1
+        else: 
+            to_be_paid = total_price
+            payment_status = 0
+        print(data)
+
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO dbo.GroceryApp_billingdetails \
+                        (user_id, order_id, first_name, last_name, \
+                        address, apartment, governorate, city, zip, phone, email, \
+                        payment_method, payment_status, to_be_paid, delivered_status) \
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        , [cur_user.id, data["order_id"], data['first_name'], data['last_name'],
+                        data['address'], data['apartment'], data['governorate'], data['city'], data['zip'], 
+                        data['phone'], data['email'], data['payment_method'], payment_status, to_be_paid, False])
+            cursor.execute(f"UPDATE GroceryApp_cartorder \
+                            SET order_status = 'shipped', \
+                            paid_status = '{payment_status}'\
+                            WHERE user_id = '{cur_user.id}'")
+
+
+            return render(request, 'GroceryApp/checkedout.html')
+
 
 def contact(request):
     categories = Category.objects.raw("select * from GroceryApp_category")
@@ -250,3 +299,8 @@ def add_to_cart(request, product_id):
     cart_order_item.save()
 
     return redirect('GroceryApp:shopping_cart')
+
+
+def checkedout(request):
+        return render(request, 'GroceryApp/checkedout.html')
+
