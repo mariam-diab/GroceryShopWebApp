@@ -120,6 +120,16 @@ def calculate_total_price(request):
     return JsonResponse({'total_price_view': total_price_view})
 
 
+def items_in_cart_calc(request):
+    cur_user = request.user
+    query = f"select count(p.id) from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.ct_ord_id= ct.order_id where co.order_status = 'processing' and ct.quantity >0 and co.user_id in (select id from userauths_user where id ='{cur_user.id}')"
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        total_cart_items = cursor.fetchone()[0]
+
+    return JsonResponse({'total_cart_items': total_cart_items})
+
 @login_required(login_url='/user/login/')
 def shopping_cart(request):
     cur_user = request.user
@@ -148,9 +158,16 @@ def wish_list(request):
     user_wishlist = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')")
     products = Product.objects.raw("select * from GroceryApp_product")
 
+    items_cnt_query = f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')"
+
+    with connection.cursor() as cursor:
+        cursor.execute(items_cnt_query)
+        wishlist_cnt = cursor.fetchone()[0]
+
     context = {
         'user_wishlist' : user_wishlist,
         'products' :products,
+        'wishlist_cnt' : wishlist_cnt, 
     }
     return render(request, 'GroceryApp/wish-list.html', context)
 

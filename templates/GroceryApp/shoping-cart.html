@@ -170,6 +170,7 @@
                                                 console.log("Order updated successfully");
 
                                                 updateTotalPrice();
+                                                updateItemsCnt();
                         
                                                 var totalPriceElement = row.find(".shoping__cart__total");
                                                 var unitPrice = parseFloat(row.find(".shoping__cart__price").text().replace('$', ''));
@@ -213,7 +214,8 @@
                                     $("#button-text").text("Updating...");
                         
                                     updateCart();  // Call the updateCart function
-                                    updateTotalPrice();  
+                                    updateTotalPrice(); 
+                                    updateItemsCnt(); 
                         
                                 });
                         
@@ -261,6 +263,26 @@
                                     },
                                     error: function (error) {
                                         console.error("Error updating total price", error);
+                                    },
+                                });
+                            }
+                            function updateItemsCnt() {
+                                $.ajax({
+                                    method: "GET",
+                                    url: "/items_in_cart_calc/",  // Replace with your Django view URL
+                                    success: function (data) {
+                                        var total_Cnt_element = $("#cart-total-items span");
+                                        var newItemsCnt = parseFloat(data.total_cart_items);
+                                        console.log("items cnt", newItemsCnt);
+
+                                        if (!isNaN(newItemsCnt)) {
+                                            total_Cnt_element.text(newItemsCnt);
+                                        } else {
+                                            console.error("Invalid total Cnt received from the server");
+                                        }
+                                    },
+                                    error: function (error) {
+                                        console.error("Error updating Cart Items cnt", error);
                                     },
                                 });
                             }
