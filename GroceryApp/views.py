@@ -103,7 +103,7 @@ def total_price_calc(cur_user):
         FROM GroceryApp_product p 
         JOIN GroceryApp_cartorderitems ct ON ct.product_id = p.id 
         JOIN GroceryApp_cartorder co ON co.ct_ord_id = ct.order_id 
-        WHERE co.order_status = 'process' 
+        WHERE co.order_status = 'processing' 
             AND ct.quantity > 0 
             AND co.user_id = %s
     """
@@ -124,7 +124,7 @@ def calculate_total_price(request):
 def shopping_cart(request):
     cur_user = request.user
 
-    user_shopping_cart = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.ct_ord_id= ct.order_id where co.order_status = 'process' and ct.quantity >0 and co.user_id in (select id from userauths_user where id ='{cur_user.id}')")
+    user_shopping_cart = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.ct_ord_id= ct.order_id where co.order_status = 'processing' and ct.quantity >0 and co.user_id in (select id from userauths_user where id ='{cur_user.id}')")
 
     categories = Category.objects.raw("select * from GroceryApp_category")
 
@@ -210,43 +210,38 @@ def remove_order(request):
     
 
     
-def add_to_cart(request, product_id):
-    cur_user = request.user
+from django.http import JsonResponse
 
-    product = Product.objects.raw(f"select * from GroceryApp_product where id = {product_id}")
-    query = f"select count(*) from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.ct_ord_id= ct.order_id where p.id = {product_id} and co.order_status = 'process' and ct.quantity >0 and co.user_id in (select id from userauths_user where id ='{cur_user.id}')"
+from django.views.decorators.http import require_POST
 
-    title_query = f"select title from GroceryApp_product where id = {product_id}"
+@login_required
+@require_POST
+def add_to_cart(request):
+    product_id = request.POST.get('id')
+    quantity = int(request.POST.get('qty'))
 
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        cnt = cursor.fetchone()[0]
+    cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
+    print(cart_order)
 
-    with connection.cursor() as cursor:
-        cursor.execute(title_query)
-        p_title = cursor.fetchone()[0]
-    
+    if not cart_order:
+        cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
+        cart_order.save()
 
-    if (cnt>0):
-        return redirect('GroceryApp:shop_details', title=p_title)
-    
-    check_for_order_query = f"select count(*) from GroceryApp_cartorder where user_id= {cur_user.id}"
+    product = get_object_or_404(Product, id=product_id)
 
-    with connection.cursor() as cursor:
-        cursor.execute(check_for_order_query)
-        orders_cnt = cursor.fetchone()[0]
+    cart_item, created = CartOrderItems.objects.get_or_create(order=cart_order, product=product)
 
-    if (orders_cnt==0):
-        cart_order_inst = CartOrder(user_id = cur_user.id, order_status = 'processing')
-        cart_order_inst.save()
+    if not created:
+        cart_item.quantity += quantity
+    else:
+        cart_item.quantity = quantity
 
-    cart_order_query = f"SELECT ct_ord_id FROM GroceryApp_cartorder WHERE user_id={cur_user.id}"
+    cart_item.price = product.price
+    cart_item.total = cart_item.price * cart_item.quantity
+    cart_item.image = product.img
+    cart_item.product_status = product.product_status
 
-    with connection.cursor() as cursor:
-        cursor.execute(cart_order_query)
-        cart_order = cursor.fetchone()[0]
+    cart_item.save()
 
-    cart_order_item = CartOrderItems(order_id=cart_order, product_id=product_id)
-    cart_order_item.save()
-
-    return redirect('GroceryApp:shopping_cart')
+    response_data = {'message': 'Added to cart successfully'}
+    return JsonResponse(response_data)

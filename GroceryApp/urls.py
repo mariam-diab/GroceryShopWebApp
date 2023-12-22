@@ -18,5 +18,5 @@ urlpatterns = [
     path('remove_order/', remove_order, name='remove_order'),
     path('calculate_total_price/', calculate_total_price, name='calculate_total_price'),
     path("shop_grid/<str:product>/", shop_grid, name="shop_grid_search"),
-    path("add_to_cart/<slug:product_id>/", add_to_cart, name= "add_to_cart"),
+    path("add_to_cart/", add_to_cart, name= "add_to_cart"),
     ]
