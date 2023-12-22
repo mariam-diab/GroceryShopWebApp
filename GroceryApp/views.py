@@ -45,14 +45,13 @@ def checkout(request):
                                                     on Co.ct_ord_id = CI.order_id \
                                                     left join GroceryApp_product P \
                                                     on P.id = CI.product_id \
-                                                    where Co.order_status = 'process' and \
+                                                    where Co.order_status = 'processing' and \
                                                     CO.user_id = '{cur_user.id}'")
         context = {
             "user" : cur_user,
             "items" : cart_items,
             "sub_total_price" : sub_total_price, 
             "total_price" : total_price,
-            "order_id" : cart_items[0].ct_ord_id if total_price else 0
         }
         return render(request, 'GroceryApp/checkout.html', context)
     elif request.method == "POST":
@@ -64,7 +63,6 @@ def checkout(request):
         else: 
             to_be_paid = total_price
             payment_status = 0
-        print(data)
 
         with connection.cursor() as cursor:
             cursor.execute("INSERT INTO dbo.GroceryApp_billingdetails \
