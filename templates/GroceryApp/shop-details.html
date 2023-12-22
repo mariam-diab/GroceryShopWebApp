@@ -3,6 +3,13 @@
 
 {% block content %}
     <!-- Hero Section Begin -->
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <section class="hero hero-normal">
         <div class="container">
             <div class="row">
@@ -120,35 +127,34 @@
                         <script src="{% static 'js/js.cookie.js' %}"></script>
                         <script>
                             document.getElementById('add-to-cart-button').addEventListener('click', function() {
-                            var csrfToken = Cookies.get('csrftoken');
-                            var quantity = document.getElementById('quantityInput').value;
-                            var productId = document.getElementById('product-id').value;
-                            var productTitle = document.getElementById('product-title').value;
-                            var productPrice = document.getElementById('product-price').value;
-
-                            $.ajax({
-                                type: 'POST',
-                                url: '/add_to_cart/',
-                                data: {
-                                    'id': productId,
-                                    'qty': quantity,
-                                    'title': productTitle,
-                                    'price': productPrice,
-                                    csrfmiddlewaretoken: csrfToken,  // Include CSRF token
-                                },
-                                success: function(data) {
-                                    console.log("Added to cart successfully");
-                                    // Add any additional logic here if needed
-                                },
-                                error: function(error) {
-                                    console.error("Error adding to cart", error);
-                                    // Handle errors here
-                                }
-                            });
-                        });
-
-                        </script>
+                                var csrfToken = Cookies.get('csrftoken');
+                                var quantity = document.getElementById('quantityInput').value;
+                                var productId = document.getElementById('product-id').value;
+                                var productTitle = document.getElementById('product-title').value;
+                                var productPrice = document.getElementById('product-price').value;
                         
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/add_to_cart/',
+                                    data: {
+                                        'id': productId,
+                                        'qty': quantity,
+                                        'title': productTitle,
+                                        'price': productPrice,
+                                        csrfmiddlewaretoken: csrfToken,  // Include CSRF token
+                                    },
+                                    success: function(data) {
+                                        console.log("Added to cart successfully");
+                                        // Redirect to the shopping cart page
+                                        window.location.href = '/shopping_cart';
+                                    },
+                                    error: function(error) {
+                                        console.error("Error adding to cart", error);
+                                        // Handle errors here
+                                    }
+                                });
+                            });
+                        </script>
                         
                         <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
                         <ul>

@@ -100,9 +100,24 @@
                     <div class="featured__item">
                         <div class="featured__item__pic set-bg" data-setbg={{p.img.url }}>
                             <ul class="featured__item__pic__hover">
-                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                <!-- <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                <li><a href="#"><i class="fa fa-retweet"></i></a></li> -->
+                                <style>
+                                    .col-lg-8 {
+                                      margin-bottom: 20px; /* Adjust the top margin as needed */
+                                    }
+                                  </style>
+                                <div class="col-lg-8">
+                                    
+                                    <form id="add-to-cart-form" method="post" action="{% url 'GroceryApp:add_to_cart_view' p.id %}">
+                                        {% csrf_token %}
+                                        
+                                        <button type="submit" class="primary-btn cart-btn cart-btn-right add-to-cart-btn" id="add-to-cart-button">
+                                            <span class="icon_loading" style="display: none;"></span>
+                                            <i class="fa fa-shopping-cart fa-lg"></i>
+                                        </button>
+                                    </form>              
+                                </div>
                             </ul>
                         </div>
                         <div class="featured__item__text">

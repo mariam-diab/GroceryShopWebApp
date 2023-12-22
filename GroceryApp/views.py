@@ -215,13 +215,12 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
 @login_required
-@require_POST
-def add_to_cart(request):
+def add_to_cart(request):  
     product_id = request.POST.get('id')
     quantity = int(request.POST.get('qty'))
 
     cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
-    print(cart_order)
+    # print(cart_order)
 
     if not cart_order:
         cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
@@ -242,6 +241,38 @@ def add_to_cart(request):
     cart_item.product_status = product.product_status
 
     cart_item.save()
+    
+    
+    print("Cart item saved successfully")
 
-    response_data = {'message': 'Added to cart successfully'}
+    response_data = {'status': 'success', 'message': 'Order added successfully'}
     return JsonResponse(response_data)
+  
+
+def add_to_cart_view(request, product_id):
+    cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
+
+    if not cart_order:
+        cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
+        cart_order.save()
+
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, created = CartOrderItems.objects.get_or_create(order=cart_order, product=product)
+
+    quantity =1
+
+    if not created:
+        cart_item.quantity += quantity
+    else:
+        cart_item.quantity = quantity
+
+    cart_item.price = product.price
+    cart_item.total = cart_item.price * cart_item.quantity
+    cart_item.image = product.img
+    cart_item.product_status = product.product_status
+
+    cart_item.save()
+
+    
+
+    return redirect('GroceryApp:shopping_cart') 
