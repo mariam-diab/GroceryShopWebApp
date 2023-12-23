@@ -29,7 +29,7 @@ class WishlistAdmin(admin.ModelAdmin):
     list_display = ['user', 'product', 'date']     
 
 class BillingDetailsAdmin(admin.ModelAdmin):
-    list_display = ['user', 'address', 'delivered_status']  
+    list_display = ['user', 'address', 'delivered_status', 'payment_method', 'payment_status']  
 
 admin.site.register(CartOrder, CartOrderAdmin)
 admin.site.register(CartOrderItems, CartOrderItemsAdmin)

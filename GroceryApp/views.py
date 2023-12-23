@@ -312,7 +312,7 @@ def add_to_cart(request):
     response_data = {'status': 'success', 'message': 'Order added successfully'}
     return JsonResponse(response_data)
   
-
+@login_required(login_url='/user/login/')
 def add_to_cart_view(request, product_id):
     cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
 
