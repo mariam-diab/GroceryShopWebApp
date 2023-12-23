@@ -15,6 +15,7 @@ from django.db import connection
 
 # Create your views here.
 def index(request):
+    cur_user = request.user
     products = Product.objects.raw("select * from GroceryApp_product")
     featured_products = Product.objects.raw("select P.*, C.title as category_title from GroceryApp_product P \
                                             left join GroceryApp_category C on P.category_id = C.cid \
@@ -22,6 +23,7 @@ def index(request):
     latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
     categories = Category.objects.raw("select * from GroceryApp_category")
     rated_products = ProductReviews.objects.raw("select * from GroceryApp_productreviews order by rating desc")
+    total_cart_items = items_calc(cur_user)
 
     context = {
         "featured_products": featured_products,
@@ -29,6 +31,7 @@ def index(request):
         "categories" : categories,
         "latest_products": latest_products,
         "rated_products" : rated_products,
+        "total_cart_items" :total_cart_items, 
     }
     return render(request, 'GroceryApp/index.html', context)
 
@@ -83,10 +86,20 @@ def checkout(request):
 
 
 def contact(request):
+    cur_user = request.user
+
     categories = Category.objects.raw("select * from GroceryApp_category")
-    return render(request, 'GroceryApp/contact.html', {"categories":categories})
+    total_cart_items = items_calc(cur_user)
+
+    context = {
+        "categories":categories,
+        "total_cart_items" : total_cart_items, 
+        }
+    
+    return render(request, 'GroceryApp/contact.html', context )
 
 def shop_details(request):
+    cur_user = request.user
     title = request.GET.get('title', None)
     categories = Category.objects.raw("select * from GroceryApp_category")
 
@@ -98,15 +111,19 @@ def shop_details(request):
 
     related_products = Product.objects.raw(f"select * from GroceryApp_product where category_id = '{product.category_id}'")
 
+    total_cart_items = items_calc(cur_user)
+
     context = {
         "product" : product,
         "categories" : categories,
         "imgs" : product_imgs,
         "related_products" : related_products,
+        "total_cart_items" :total_cart_items,
     }
     return render(request, 'GroceryApp/shop-details.html', context)
 
 def shop_grid(request):
+    cur_user = request.user
     category = request.GET.get('category') or "All"
     product = request.GET.get('product', '')
     if product:
@@ -133,6 +150,8 @@ def shop_grid(request):
     page_number = request.GET.get('page')
     paginated_products = paginator.get_page(page_number) 
 
+    total_cart_items = items_calc(cur_user)
+
     context = {
         "products" : products,
         "categories" : categories,
@@ -141,6 +160,7 @@ def shop_grid(request):
         "max_price" : max_price_range,
         "paginated_products" : paginated_products,
         "category" : category,
+        "total_cart_items" : total_cart_items
     }
     return render(request, 'GroceryApp/shop-grid.html', context)
 
@@ -167,14 +187,31 @@ def calculate_total_price(request):
     return JsonResponse({'total_price_view': total_price_view})
 
 
-def items_in_cart_calc(request):
-    cur_user = request.user
+
+def items_calc(cur_user):
     query = f"select count(p.id) from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.ct_ord_id= ct.order_id where co.order_status = 'processing' and ct.quantity >0 and co.user_id in (select id from userauths_user where id ='{cur_user.id}')"
 
     with connection.cursor() as cursor:
         cursor.execute(query)
         total_cart_items = cursor.fetchone()[0]
+    return total_cart_items
 
+def base_view(request):
+    cur_user = request.user
+    total_cart_items = items_calc(cur_user)
+
+    context ={
+        "total_cart_items": total_cart_items,
+        
+    }
+    return render(request, 'partials/base.html', context)
+
+
+def items_in_cart_calc(request):
+    cur_user = request.user
+
+
+    total_cart_items = items_calc(cur_user)
     return JsonResponse({'total_cart_items': total_cart_items})
 
 @login_required(login_url='/user/login/')
@@ -186,11 +223,13 @@ def shopping_cart(request):
     categories = Category.objects.raw("select * from GroceryApp_category")
 
     total_price = total_price_calc(cur_user)
+    total_cart_items = items_calc(cur_user)
 
     context = {
         "categories" : categories,
         "user_shopping_cart" : user_shopping_cart,
         "total_price": total_price,
+        "total_cart_items" : total_cart_items, 
     }
     return render(request, 'GroceryApp/shoping-cart.html', context)
 
@@ -211,10 +250,13 @@ def wish_list(request):
         cursor.execute(items_cnt_query)
         wishlist_cnt = cursor.fetchone()[0]
 
+    total_cart_items = items_calc(cur_user)
+
     context = {
         'user_wishlist' : user_wishlist,
         'products' :products,
         'wishlist_cnt' : wishlist_cnt, 
+        "total_cart_items" :total_cart_items, 
     }
     return render(request, 'GroceryApp/wish-list.html', context)
 
@@ -336,7 +378,5 @@ def add_to_cart_view(request, product_id):
     cart_item.product_status = product.product_status
 
     cart_item.save()
-
-    
 
     return redirect('GroceryApp:shopping_cart') 

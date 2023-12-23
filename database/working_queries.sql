@@ -90,3 +90,15 @@ SELECT ct_ord_id FROM GroceryApp_cartorder WHERE user_id=5;
 
 INSERT INTO GroceryApp_cartorderitems (product_id, order_id, invoice_number)
 VALUES (2, 5, 'abcdefgh12345');
+
+
+
+select count(p.id) from GroceryApp_product p 
+join GroceryApp_cartorderitems 
+ct on ct.product_id =p.id
+join GroceryApp_cartorder
+co on co.ct_ord_id= ct.order_id 
+where co.order_status = 'processing' 
+and ct.quantity >0 and 
+co.user_id in
+(select id from userauths_user where id =4)
