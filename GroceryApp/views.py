@@ -125,13 +125,15 @@ def shop_details(request):
 def shop_grid(request):
     cur_user = request.user
     category = request.GET.get('category') or "All"
-    product = request.GET.get('product', '')
+    product = request.GET.get('product')
+    brand_name = request.GET.get('brand_name')
+    nationality = request.GET.get('nationality')
     if product:
-        products = Product.objects.raw("select * from GroceryApp_product where title like %s", ['%' + product + '%'])
-    elif category != "All":
-        products = Product.objects.raw(f"select * from GroceryApp_product where category_id in (select cid FROM GroceryApp_category where title = '{category}')")
-    else:
-        products = Product.objects.raw(f"select * from GroceryApp_product") 
+        products = Product.objects.raw(f"select * from GroceryApp_product where title like '%%{product}%%' or brand_name like '%%{product}%%' or brand_nationality like '%%{product}%%'")
+    # elif category != "All":
+    #     products = Product.objects.raw(f"select * from GroceryApp_product where category_id in (select cid FROM GroceryApp_category where title = '{category}')")
+    # else:
+    #     products = Product.objects.raw(f"select * from GroceryApp_product")
 
         
     categories = Category.objects.raw("select * from GroceryApp_category")
@@ -140,8 +142,21 @@ def shop_grid(request):
     min_price = request.GET.get('minamount')
     max_price = request.GET.get('maxamount')
 
+    sql_query = "SELECT * from GroceryApp_product where 1=1" 
+
+    if category != "All":
+        sql_query += f"and category_id in (select cid FROM GroceryApp_category where title = '{category}')"
     if min_price and max_price:
-        products = Product.objects.raw(f"select * from GroceryApp_product where price between {min_price} and {max_price}")
+        sql_query += f"and price between {min_price} and {max_price}"
+        # products = Product.objects.raw(f"select * from GroceryApp_product where price between {min_price} and {max_price}")
+    if brand_name:
+        sql_query += f"and brand_name = '{brand_name}'"
+    if nationality:
+        sql_query += f"and brand_nationality = '{nationality}'"
+
+    # products = Product.objects.raw(sql_query)
+
+    
 
     min_price_range = min((p.price for p in products), default=0)
     max_price_range = max((p.price for p in products), default=0)
@@ -160,7 +175,9 @@ def shop_grid(request):
         "max_price" : max_price_range,
         "paginated_products" : paginated_products,
         "category" : category,
-        "total_cart_items" : total_cart_items
+        "total_cart_items" : total_cart_items,
+        "brands": set(p.brand_name for p in products),
+        "nationalities": set(p.brand_nationality for p in products)
     }
     return render(request, 'GroceryApp/shop-grid.html', context)
 

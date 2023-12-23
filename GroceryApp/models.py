@@ -70,6 +70,9 @@ class Product(models.Model):
     date = models.DateTimeField(auto_now_add = True)
     updated = models.DateTimeField(blank=True, null=True)
 
+    brand_name = models.CharField(max_length=100, null=False)
+    brand_nationality = models.CharField(max_length=100, null=False)
+
 
     class Meta:
         verbose_name_plural = 'Products'
