@@ -134,29 +134,25 @@ def shop_grid(request):
     #     products = Product.objects.raw(f"select * from GroceryApp_product where category_id in (select cid FROM GroceryApp_category where title = '{category}')")
     # else:
     #     products = Product.objects.raw(f"select * from GroceryApp_product")
+    else:
+        min_price = request.GET.get('minamount')
+        max_price = request.GET.get('maxamount')
+        sql_query = "SELECT * from GroceryApp_product where 1=1" 
+        if category != "All":
+            sql_query += f"and category_id in (select cid FROM GroceryApp_category where title = '{category}')"
+        if min_price and max_price:
+            sql_query += f"and price between {min_price} and {max_price}"
+            # products = Product.objects.raw(f"select * from GroceryApp_product where price between {min_price} and {max_price}")
+        if brand_name:
+            sql_query += f"and brand_name = '{brand_name}'"
+        if nationality:
+            sql_query += f"and brand_nationality = '{nationality}'"
+
+        products = Product.objects.raw(sql_query)
 
         
     categories = Category.objects.raw("select * from GroceryApp_category")
     latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
-
-    min_price = request.GET.get('minamount')
-    max_price = request.GET.get('maxamount')
-
-    sql_query = "SELECT * from GroceryApp_product where 1=1" 
-
-    if category != "All":
-        sql_query += f"and category_id in (select cid FROM GroceryApp_category where title = '{category}')"
-    if min_price and max_price:
-        sql_query += f"and price between {min_price} and {max_price}"
-        # products = Product.objects.raw(f"select * from GroceryApp_product where price between {min_price} and {max_price}")
-    if brand_name:
-        sql_query += f"and brand_name = '{brand_name}'"
-    if nationality:
-        sql_query += f"and brand_nationality = '{nationality}'"
-
-    # products = Product.objects.raw(sql_query)
-
-    
 
     min_price_range = min((p.price for p in products), default=0)
     max_price_range = max((p.price for p in products), default=0)
