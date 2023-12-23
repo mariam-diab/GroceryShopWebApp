@@ -113,6 +113,28 @@ def shop_details(request):
 
     total_cart_items = items_calc(cur_user)
 
+    total_purchase = f"SELECT COUNT(order_id) AS total_count \
+    FROM GroceryApp_cartorderitems \
+    WHERE product_id = {product.id} \
+    GROUP BY product_id \
+    HAVING product_id = {product.id}"
+    
+    total_purchase_last_day = f"select count(CI.product_id) count_last_day from GroceryApp_cartorderitems CI \
+    left join GroceryApp_cartorder C \
+    on CI.order_id = C.ct_ord_id \
+    where C.order_status = 'shipped' and C.order_date >= dateadd(hour, -24, getdate()) \
+    group by product_id \
+    having product_id = {product.id}"
+
+    with connection.cursor() as cursor:
+        cursor.execute(total_purchase)
+        total_purchase = cursor.fetchall()[0][0]
+        cursor.execute(total_purchase_last_day)
+        total_purchase_last_day = cursor.fetchall()[0][0]
+
+    print(total_purchase, total_purchase_last_day)
+
+
     context = {
         "product" : product,
         "categories" : categories,
@@ -200,7 +222,6 @@ def calculate_total_price(request):
     return JsonResponse({'total_price_view': total_price_view})
 
 
-
 def items_calc(cur_user):
     query = f"select count(p.id) from GroceryApp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.ct_ord_id= ct.order_id where co.order_status = 'processing' and ct.quantity >0 and co.user_id in (select id from userauths_user where id ='{cur_user.id}')"
 
@@ -209,6 +230,7 @@ def items_calc(cur_user):
         total_cart_items = cursor.fetchone()[0]
     return total_cart_items
 
+@login_required(login_url='/user/login/')
 def base_view(request):
     cur_user = request.user
     total_cart_items = items_calc(cur_user)
@@ -219,7 +241,7 @@ def base_view(request):
     }
     return render(request, 'partials/base.html', context)
 
-
+@login_required(login_url='/user/login/')
 def items_in_cart_calc(request):
     cur_user = request.user
 
