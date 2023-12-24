@@ -266,26 +266,7 @@
                                     },
                                 });
                             }
-                            function updateItemsCnt() {
-                                $.ajax({
-                                    method: "GET",
-                                    url: "/items_in_cart_calc/",  // Replace with your Django view URL
-                                    success: function (data) {
-                                        var total_Cnt_element = $("#cart-total-items span");
-                                        var newItemsCnt = parseFloat(data.total_cart_items);
-                                        console.log("items cnt", newItemsCnt);
-
-                                        if (!isNaN(newItemsCnt)) {
-                                            total_Cnt_element.text(newItemsCnt);
-                                        } else {
-                                            console.error("Invalid total Cnt received from the server");
-                                        }
-                                    },
-                                    error: function (error) {
-                                        console.error("Error updating Cart Items cnt", error);
-                                    },
-                                });
-                            }
+                        
 
                             });
                         </script>

@@ -23,7 +23,10 @@ def index(request):
     latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
     categories = Category.objects.raw("select * from GroceryApp_category")
     rated_products = ProductReviews.objects.raw("select * from GroceryApp_productreviews order by rating desc")
-    total_cart_items = items_calc(cur_user)
+    if cur_user.is_authenticated:
+        total_cart_items = items_calc(cur_user)
+    else:
+        total_cart_items= 0
 
     context = {
         "featured_products": featured_products,
@@ -89,7 +92,10 @@ def contact(request):
     cur_user = request.user
 
     categories = Category.objects.raw("select * from GroceryApp_category")
-    total_cart_items = items_calc(cur_user)
+    if cur_user.is_authenticated:
+        total_cart_items = items_calc(cur_user)
+    else:
+        total_cart_items= 0
 
     context = {
         "categories":categories,
@@ -111,7 +117,10 @@ def shop_details(request):
 
     related_products = Product.objects.raw(f"select * from GroceryApp_product where category_id = '{product.category_id}'")
 
-    total_cart_items = items_calc(cur_user)
+    if cur_user.is_authenticated:
+        total_cart_items = items_calc(cur_user)
+    else:
+        total_cart_items= 0
 
     total_purchase = f"SELECT COUNT(order_id) AS total_count \
     FROM GroceryApp_cartorderitems \
@@ -189,7 +198,10 @@ def shop_grid(request):
     page_number = request.GET.get('page')
     paginated_products = paginator.get_page(page_number) 
 
-    total_cart_items = items_calc(cur_user)
+    if cur_user.is_authenticated:
+        total_cart_items = items_calc(cur_user)
+    else:
+        total_cart_items= 0
 
     context = {
         "products" : products,
@@ -239,7 +251,10 @@ def items_calc(cur_user):
 @login_required(login_url='/user/login/')
 def base_view(request):
     cur_user = request.user
-    total_cart_items = items_calc(cur_user)
+    if cur_user.is_authenticated:
+        total_cart_items = items_calc(cur_user)
+    else:
+        total_cart_items= 0
 
     context ={
         "total_cart_items": total_cart_items,
@@ -252,7 +267,10 @@ def items_in_cart_calc(request):
     cur_user = request.user
 
 
-    total_cart_items = items_calc(cur_user)
+    if cur_user.is_authenticated:
+        total_cart_items = items_calc(cur_user)
+    else:
+        total_cart_items= 0
     return JsonResponse({'total_cart_items': total_cart_items})
 
 @login_required(login_url='/user/login/')
@@ -264,7 +282,10 @@ def shopping_cart(request):
     categories = Category.objects.raw("select * from GroceryApp_category")
 
     total_price = total_price_calc(cur_user)
-    total_cart_items = items_calc(cur_user)
+    if cur_user.is_authenticated:
+        total_cart_items = items_calc(cur_user)
+    else:
+        total_cart_items= 0
 
     context = {
         "categories" : categories,
@@ -291,7 +312,10 @@ def wish_list(request):
         cursor.execute(items_cnt_query)
         wishlist_cnt = cursor.fetchone()[0]
 
-    total_cart_items = items_calc(cur_user)
+    if cur_user.is_authenticated:
+        total_cart_items = items_calc(cur_user)
+    else:
+        total_cart_items= 0
 
     context = {
         'user_wishlist' : user_wishlist,
