@@ -101,8 +101,20 @@
                             <i class="fa fa-star-half-o"></i>
                             <span>(18 reviews)</span>
                         </div>
-                        <div class="product__details__price">${{product.price}}</div>
-                        <p>SKU: {{product.sku}}</p>
+                        <div class="product__details__price">
+                            ${{ product.price }}   
+                            {% if product.price != product.old_price %}
+                            <span style="font-size: 75%; color: #999; text-decoration: line-through;">${{ product.old_price }}</span>
+                            {% endif %}
+                        </div> 
+                        <p>
+                                <il>SKU: {{product.sku}}</il> <br>
+                                <il>Total Purchases Made: {{total_purchase}}</il> <br>
+                                <il>Purchases Within the Last 24 Hours: {{total_purchase_today}}</il>
+                        </p>
+                        <!-- <p>SKU: {{product.sku}}</p> 
+                        <p>Total Purchase: {{total_purchase}}</p>
+                        <p>Total Purchase in the last 24 hours: {{total_purchase_today}}</p> -->
                         <div class="product__details__quantity">
                             <div class="quantity">
                                 <div class="pro-qty">

@@ -119,7 +119,7 @@ def shop_details(request):
     GROUP BY product_id \
     HAVING product_id = {product.id}"
     
-    total_purchase_last_day = f"select count(CI.product_id) count_last_day from GroceryApp_cartorderitems CI \
+    total_purchase_today = f"select count(CI.product_id) count_last_day from GroceryApp_cartorderitems CI \
     left join GroceryApp_cartorder C \
     on CI.order_id = C.ct_ord_id \
     where C.order_status = 'shipped' and C.order_date >= dateadd(hour, -24, getdate()) \
@@ -128,11 +128,12 @@ def shop_details(request):
 
     with connection.cursor() as cursor:
         cursor.execute(total_purchase)
-        total_purchase = cursor.fetchall()[0][0]
-        cursor.execute(total_purchase_last_day)
-        total_purchase_last_day = cursor.fetchall()[0][0]
+        total_purchase = cursor.fetchall()
+        cursor.execute(total_purchase_today)
+        total_purchase_today = cursor.fetchall()
 
-    print(total_purchase, total_purchase_last_day)
+    total_purchase = total_purchase[0][0] if total_purchase else 0
+    total_purchase_today = total_purchase_today[0][0] if total_purchase_today else 0
 
 
     context = {
@@ -141,6 +142,9 @@ def shop_details(request):
         "imgs" : product_imgs,
         "related_products" : related_products,
         "total_cart_items" :total_cart_items,
+        "total_purchase" : total_purchase,
+        "total_purchase_today" : total_purchase_today,
+
     }
     return render(request, 'GroceryApp/shop-details.html', context)
 
