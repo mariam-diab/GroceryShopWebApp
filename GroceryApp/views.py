@@ -183,7 +183,7 @@ def shop_grid(request):
     min_price_range = min((p.price for p in products), default=0)
     max_price_range = max((p.price for p in products), default=0)
 
-    print(min_price_range, max_price_range)
+    print(min_price_range, max)
 
     paginator = Paginator(products, 6) 
     page_number = request.GET.get('page')
@@ -421,3 +421,5 @@ def add_to_cart_view(request, product_id):
     cart_item.save()
 
     return redirect('GroceryApp:shopping_cart') 
+
+    
