@@ -85,6 +85,7 @@
                         <div class="sidebar__item">
                             <h4>Category</h4>
                             <ul>
+                                <li><a href="{% url 'GroceryApp:shop_grid' %}?category=All">All</a></li>
                                 {% for c in categories %}
                                 <li><a href="{% url 'GroceryApp:shop_grid' %}?category={{ c.title }}">{{c.title}}</a>
                                 {% endfor %}
@@ -92,8 +93,8 @@
                         </div>
                         <form action="{% url 'GroceryApp:shop_grid' %}">
                         <input type="hidden" id="category" name="category" value="{{category}}">
-                        <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script> -->
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
                         <div class="sidebar__item">
                             <h4>Price</h4>
                             <div class="price-range-wrap">
@@ -117,7 +118,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <script src="{% static 'js/slider.js' %}"></script> -->
+                        <script src="{% static 'js/slider.js' %}"></script>
                         <div class="sidebar__item">
                             <h4>Brand Name</h4>
                             <ul>

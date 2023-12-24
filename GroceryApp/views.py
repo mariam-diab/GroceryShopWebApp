@@ -183,6 +183,8 @@ def shop_grid(request):
     min_price_range = min((p.price for p in products), default=0)
     max_price_range = max((p.price for p in products), default=0)
 
+    print(min_price_range, max_price_range)
+
     paginator = Paginator(products, 6) 
     page_number = request.GET.get('page')
     paginated_products = paginator.get_page(page_number) 
