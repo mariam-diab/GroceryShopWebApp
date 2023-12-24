@@ -40,7 +40,6 @@ class Migration(migrations.Migration):
                     "title",
                     models.CharField(
                         blank=True,
-                        db_collation="Arabic_CI_AI",
                         max_length=100,
                         null=True,
                     ),

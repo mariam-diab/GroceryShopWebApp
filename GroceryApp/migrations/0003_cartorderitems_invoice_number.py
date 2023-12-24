@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='cartorderitems',
             name='invoice_number',
-            field=models.CharField(blank=True, db_collation='Arabic_CI_AI', max_length=200, null=True),
+            field=models.CharField(blank=True, max_length=200, null=True),
         ),
     ]

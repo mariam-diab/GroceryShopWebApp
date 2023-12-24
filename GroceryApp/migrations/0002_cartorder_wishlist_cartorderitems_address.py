@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('price', models.DecimalField(decimal_places=2, default='0.99', max_digits=14, null=True)),
                 ('paid_status', models.BooleanField(default=False)),
                 ('order_date', models.DateTimeField(auto_now_add=True)),
-                ('product_status', models.CharField(choices=[('process', 'Processing'), ('shipped', 'Shipped'), ('delivered', 'Delivered')], db_collation='Arabic_CI_AI', default='Processing', max_length=30)),
+                ('product_status', models.CharField(choices=[('process', 'Processing'), ('shipped', 'Shipped'), ('delivered', 'Delivered')], default='Processing', max_length=30)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -43,9 +43,9 @@ class Migration(migrations.Migration):
             name='CartOrderItems',
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('product_status', models.CharField(blank=True, db_collation='Arabic_CI_AI', max_length=200, null=True)),
-                ('item', models.CharField(blank=True, db_collation='Arabic_CI_AI', max_length=200, null=True)),
-                ('image', models.CharField(blank=True, db_collation='Arabic_CI_AI', max_length=200, null=True)),
+                ('product_status', models.CharField(blank=True, max_length=200, null=True)),
+                ('item', models.CharField(blank=True, max_length=200, null=True)),
+                ('image', models.CharField(blank=True, max_length=200, null=True)),
                 ('quantity', models.IntegerField(blank=True, default=1, null=True)),
                 ('price', models.DecimalField(blank=True, decimal_places=2, default='0.99', max_digits=14, null=True)),
                 ('total', models.DecimalField(blank=True, decimal_places=2, default='0.99', max_digits=25, null=True)),
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
             name='Address',
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('address', models.CharField(db_collation='Arabic_CI_AI', max_length=100)),
+                ('address', models.CharField(max_length=100)),
                 ('status', models.BooleanField(default=False)),
                 ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],

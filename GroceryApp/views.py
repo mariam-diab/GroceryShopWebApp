@@ -91,7 +91,9 @@ def checkout(request):
 def contact(request):
     cur_user = request.user
 
-    categories = Category.objects.raw("select * from GroceryApp_category")
+    categories = Category.objects.raw("SELECT * FROM GroceryApp_category")
+    # categories = Category.objects.all()
+
     if cur_user.is_authenticated:
         total_cart_items = items_calc(cur_user)
     else:

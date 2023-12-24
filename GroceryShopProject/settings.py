@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6nun)vjhkct2!x&1)%@moomipk59v)dj0xi360o6ia5h-_+9$u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -85,14 +85,14 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
-    'default':{
-    'ENGINE':'mssql',                   
-    'NAME':'database(24_11AM)',                    
-    'HOST':'TOQTOQ\SQLEXPRESS', 
-    'PORT':'',                           
-    'OPTIONS': {
-        'driver': 'ODBC Driver 17 for SQL Server',
-        }
+    # 'default':{
+    # 'ENGINE':'mssql',                   
+    # 'NAME':'database(24_11AM)',                    
+    # 'HOST':'TOQTOQ\SQLEXPRESS', 
+    # 'PORT':'',                           
+    # 'OPTIONS': {
+    #     'driver': 'ODBC Driver 17 for SQL Server',
+    #     }
     # }
     # 'default':{
     #     'ENGINE':'mssql',                   
@@ -102,7 +102,16 @@ DATABASES = {
     #     'OPTIONS': {
     #     'driver': 'ODBC Driver 17 for SQL Server',
     #     }
-     }
+    #  }
+    'default':{
+    'ENGINE':'django.db.backends.postgresql',                   
+    'NAME':'railway',                    
+    'USER' :'postgres',
+    'PASSWORD' : '5d5-AFCc5*2e3-b*-BE2f4A1BDdgb-C5', 
+    'HOST':'roundhouse.proxy.rlwy.net', 
+    'PORT':'16498'   
+    }                   
+   
 }
 
 

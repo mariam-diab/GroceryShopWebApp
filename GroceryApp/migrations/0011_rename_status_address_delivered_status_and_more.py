@@ -19,22 +19,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='address',
             name='apartment',
-            field=models.CharField(db_collation='Arabic_CI_AI', max_length=100, null=True),
+            field=models.CharField(max_length=100, null=True),
         ),
         migrations.AddField(
             model_name='address',
             name='city',
-            field=models.CharField(db_collation='Arabic_CI_AI', max_length=100, null=True),
+            field=models.CharField(max_length=100, null=True),
         ),
         migrations.AddField(
             model_name='address',
             name='email',
-            field=models.CharField(db_collation='Arabic_CI_AI', max_length=100, null=True),
+            field=models.CharField(max_length=100, null=True),
         ),
         migrations.AddField(
             model_name='address',
             name='governorate',
-            field=models.CharField(db_collation='Arabic_CI_AI', max_length=100, null=True),
+            field=models.CharField(max_length=100, null=True),
         ),
         migrations.AddField(
             model_name='address',
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='address',
             name='payment_method',
-            field=models.CharField(db_collation='Arabic_CI_AI', max_length=50, null=True),
+            field=models.CharField( max_length=50, null=True),
         ),
         migrations.AddField(
             model_name='address',
@@ -55,6 +55,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='address',
             name='phone',
-            field=models.CharField(db_collation='Arabic_CI_AI', max_length=20, null=True),
+            field=models.CharField(max_length=20, null=True),
         ),
     ]
