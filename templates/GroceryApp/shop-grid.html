@@ -221,7 +221,7 @@
                                             </div>
                                             <div class="latest-product__item__text">
                                                 <a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}" style="color:black;">{{p.title}}</a>
-                                                <span>${{p.price}}</span>
+                                                <span>EGP {{p.price}}</span>
                                             </div>
                                         </div>
                                         {% endfor %}
@@ -234,7 +234,7 @@
                                             </div>
                                             <div class="latest-product__item__text">
                                                 <a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}" style="color:black;">{{p.title}}</a>
-                                                <span>${{p.price}}</span>
+                                                <span>EGP {{p.price}}</span>
                                             </div>
                                         </div>
                                         {% endfor %}
@@ -278,7 +278,7 @@
                                             <div class="product__discount__item__text">
                                                 <span>{{ p.category }}</span>
                                                 <h5><a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}">{{ p.title }}</a></h5>
-                                                <div class="product__item__price">${{ p.price }} <span>${{ p.old_price }}</span></div>
+                                                <div class="product__item__price">EGP {{ p.price }} <span>EGP {{ p.old_price }}</span></div>
                                             </div>
                                         </div>
                                     </div>
@@ -338,7 +338,7 @@
                                 </div>
                                 <div class="product__item__text">
                                     <h6><a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}">{{p.title}}</a></h6>
-                                    <h5>${{p.price}}</h5>
+                                    <h5>EGP {{p.price}}</h5>
                                 </div>
                             </div>
                         </div>

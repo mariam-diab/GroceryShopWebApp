@@ -105,7 +105,7 @@
                                         <h5>{{ p.title }}</h5>
                                     </td>
                                     <td class="shoping__cart__price">
-                                        ${{ p.price }}
+                                        EGP {{ p.price }}
                                     </td>
                                     <td class="shoping__cart__quantity">
                                         <div class="quantity">
@@ -115,7 +115,7 @@
                                         </div>
                                     </td>
                                     <td class="shoping__cart__total">
-                                        ${{ p.total }}
+                                        EGP {{ p.total }}
                                     </td>
                                     <td class="shoping__cart__item__close">
                                         <span class="icon_close"></span>
@@ -173,10 +173,10 @@
                                                 updateItemsCnt();
                         
                                                 var totalPriceElement = row.find(".shoping__cart__total");
-                                                var unitPrice = parseFloat(row.find(".shoping__cart__price").text().replace('$', ''));
+                                                var unitPrice = parseFloat(row.find(".shoping__cart__price").text().replace('EGP ', ''));
                                                 var newTotalPrice = unitPrice * newQuantity;
                         
-                                                totalPriceElement.text("$" + newTotalPrice.toFixed(2));
+                                                totalPriceElement.text("EGP " + newTotalPrice.toFixed(2));
                         
                                                 if (newQuantity == 0) {
                                                     row.remove();
@@ -256,7 +256,7 @@
                                         var newTotalPrice = parseFloat(data.total_price_view);
 
                                         if (!isNaN(newTotalPrice)) {
-                                            total_price_element.text("$" + newTotalPrice.toFixed(2));
+                                            total_price_element.text("EGP " + newTotalPrice.toFixed(2));
                                         } else {
                                             console.error("Invalid total price received from the server");
                                         }
@@ -310,7 +310,7 @@
                         <h5>Cart Total</h5>
                        
                         <ul>
-                            <li id="total-price">Total Price <span>${{ total_price }}</span></li>
+                            <li id="total-price">Total Price <span>EGP {{ total_price }}</span></li>
                         </ul>
                         <a href="{% url 'GroceryApp:checkout' %}" class="primary-btn">PROCEED TO CHECKOUT</a>
                     </div>

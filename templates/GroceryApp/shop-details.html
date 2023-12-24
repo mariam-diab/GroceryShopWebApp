@@ -102,9 +102,9 @@
                             <span>(18 reviews)</span>
                         </div>
                         <div class="product__details__price">
-                            ${{ product.price }}   
+                            EGP {{ product.price }}   
                             {% if product.price != product.old_price %}
-                            <span style="font-size: 75%; color: #999; text-decoration: line-through;">${{ product.old_price }}</span>
+                            <span style="font-size: 75%; color: #999; text-decoration: line-through;">EGP {{ product.old_price }}</span>
                             {% endif %}
                         </div> 
                         <p>
@@ -282,7 +282,7 @@
                         </div>
                         <div class="product__item__text">
                             <h6><a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}">{{p.title}}</a></h6>
-                            <h5>${{p.price}}</h5>
+                            <h5>EGP {{p.price}}</h5>
                         </div>
                     </div>
                 </div>
