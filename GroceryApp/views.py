@@ -65,10 +65,10 @@ def checkout(request):
         data = {key: request.POST.get(key) for key in request.POST.keys()}
         if data['payment_method'] == "paypal":  
             to_be_paid = 0 
-            payment_status = 1
+            payment_status = True
         else: 
             to_be_paid = total_price
-            payment_status = 0
+            payment_status = False
 
         with connection.cursor() as cursor:
             cursor.execute("INSERT INTO groceryapp_billingdetails \
@@ -83,7 +83,7 @@ def checkout(request):
             cursor.execute(f"UPDATE GroceryApp_cartorder \
                             SET order_status = 'shipped', \
                             paid_status = '{payment_status}' \
-                            WHERE order_id = {data['order_id']}")
+                            WHERE ct_ord_id = {data['order_id']}")
 
 
             return render(request, 'GroceryApp/checkedout.html')
@@ -398,14 +398,36 @@ def add_to_cart(request):
     product_id = request.POST.get('id')
     quantity = int(request.POST.get('qty'))
 
-    cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
+
+    cart_order_query = f"SELECT * \
+                    FROM cart_order \
+                    WHERE user_id = {request.id} \
+                    AND paid_status = FALSE \
+                    AND order_status = 'processing' \
+                    LIMIT 1"
+    
+    with connection.cursor() as cursor:
+        cursor.execute(cart_order_query)
+        cart_order = cursor.fetchone()[0]
+
+    # cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
     # print(cart_order)
 
     if not cart_order:
-        cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
+        # cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
+        insert_query = f"INSERT INTO cart_order \
+                    (user_id, paid_status, order_status) \
+                    VALUES ({request.id}, FALSE, 'processing') \
+                    RETURNING *"
+        with connection.cursor() as cursor:
+            cursor.execute(insert_query)
         cart_order.save()
 
-    product = get_object_or_404(Product, id=product_id)
+    # product = get_object_or_404(Product, id=product_id)
+    get_product_query = f"SELECT * FROM product WHERE id = {product_id}"
+    with connection.cursor() as cursor:
+        cursor.execute(get_product_query)
+        product = cursor.fetchone()[0]
 
     cart_item, created = CartOrderItems.objects.get_or_create(order=cart_order, product=product)
 
