@@ -7,10 +7,11 @@ from shortuuid.django_fields import ShortUUIDField
 
 class Category(models.Model):
     cid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet= "abcdefgh12345", prefix="cat")
-    title = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=True, null=True)
+    title = models.CharField(max_length=100, blank=True, null=True)
     img = models.ImageField(blank=True, null=True, upload_to= 'category')
 
     class Meta:
+        db_table = 'groceryapp_category'
         verbose_name_plural = "categories"
     
     def category_image(self):
@@ -70,12 +71,14 @@ class Product(models.Model):
     date = models.DateTimeField(auto_now_add = True)
     updated = models.DateTimeField(blank=True, null=True)
 
-    brand_name = models.CharField(max_length=100, null=False)
-    brand_nationality = models.CharField(max_length=100, null=False)
+    brand_name = models.CharField(max_length=100, null=False, default= 'egypt')
+    brand_nationality = models.CharField(max_length=100, null=False, default= 'egypt')
 
 
     class Meta:
+        db_table = 'groceryapp_product'
         verbose_name_plural = 'Products'
+
 
     def product_image(self):
         return mark_safe('<img src="%s" width="50" height="50" />' %(self.img.url))
@@ -94,6 +97,7 @@ class ProductImages(models.Model):
 
     class Meta:
         verbose_name_plural = "Product Images"
+        db_table = 'groceryapp_productimages'
 
 STATUS_CHOICE = (
     ("processing", "Processing"),
@@ -106,11 +110,11 @@ class CartOrder(models.Model):
     price = models.DecimalField(max_digits=14, decimal_places=2, default='0.99', null=True)
     paid_status = models.BooleanField(default=False)
     order_date = models.DateTimeField(auto_now_add=True)
-    order_status = models.CharField(max_length=30, db_collation='Arabic_CI_AI', default='Processing', choices=STATUS_CHOICE)
+    order_status = models.CharField(max_length=30, default='Processing', choices=STATUS_CHOICE)
 
     class Meta:
         # managed = True
-        # db_table = 'groceryapp_cartorder'
+        db_table = 'groceryapp_cartorder'
         verbose_name_plural = 'Cart Order'
 
 
@@ -118,7 +122,7 @@ class CartOrderItems(models.Model):
     ct_ord_it_id = models.BigAutoField(primary_key=True)
     order = models.ForeignKey(CartOrder, models.CASCADE, blank=False, null=False)
     invoice_number = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefgh12345", null = True)
-    product_status = models.CharField(max_length=200, db_collation='Arabic_CI_AI', blank=True, null=True)
+    product_status = models.CharField(max_length=200, blank=True, null=True)
     product = models.ForeignKey(Product, models.CASCADE, blank=True, null=True)
     quantity = models.IntegerField(default=1, blank=True, null=True)
     price = models.DecimalField(max_digits=14, decimal_places=2, blank=True, null=True)
@@ -128,7 +132,7 @@ class CartOrderItems(models.Model):
 
     class Meta:
             # managed = True
-            # db_table = 'groceryapp_cartorderitems'
+            db_table = 'groceryapp_cartorderitems'
             verbose_name_plural = 'Cart Order Items'
 
     def save(self, *args, **kwargs):
@@ -157,7 +161,7 @@ class Wishlist(models.Model):
 
     class Meta:
         # managed = True
-        # db_table = 'groceryapp_wishlist'
+        db_table = 'groceryapp_wishlist'
         verbose_name_plural = 'Wishlist'
 
     def __str__(self):
@@ -170,21 +174,21 @@ class BillingDetails(models.Model):
     order = models.ForeignKey(CartOrder, models.SET_NULL, blank=False, null=True)
     first_name = models.CharField(max_length=23)
     last_name = models.CharField(max_length=23)
-    address = models.CharField(max_length=100, db_collation='Arabic_CI_AI')
-    apartment = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=False, null=True)
-    governorate = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=False, null=True)
-    city = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=False, null=True)
+    address = models.CharField(max_length=100)
+    apartment = models.CharField(max_length=100, blank=False, null=True)
+    governorate = models.CharField(max_length=100, blank=False, null=True)
+    city = models.CharField(max_length=100, blank=False, null=True)
     zip = models.CharField(max_length=10)
-    phone = models.CharField(max_length=20, db_collation='Arabic_CI_AI', blank=False, null=True)
-    email = models.CharField(max_length=100, db_collation='Arabic_CI_AI', blank=False, null=True)
-    payment_method = models.CharField(max_length=50, db_collation='Arabic_CI_AI', blank=False, null=True)
+    phone = models.CharField(max_length=20, blank=False, null=True)
+    email = models.CharField(max_length=100, blank=False, null=True)
+    payment_method = models.CharField(max_length=50, blank=False, null=True)
     payment_status = models.BooleanField(blank=False, null=False)
     to_be_paid = models.DecimalField(max_digits=20, decimal_places=2, default= 0)
     delivered_status = models.BooleanField(default=False)
 
     class Meta:
         # managed = True
-        # db_table = 'GroceryApp_BillingDetails'
+        db_table = 'groceryapp_billingdetails'
         verbose_name_plural = 'Billing Details'
 
 class ProductReviews(models.Model):
@@ -194,6 +198,7 @@ class ProductReviews(models.Model):
     date = models.DateTimeField(auto_now_add= True)
 
     class Meta:
+        db_table = 'groceryapp_productreviews'
         verbose_name_plural = "Product Reviews"
     
     def __str__(self):
