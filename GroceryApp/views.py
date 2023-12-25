@@ -71,7 +71,7 @@ def checkout(request):
             payment_status = 0
 
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO dbo.GroceryApp_billingdetails \
+            cursor.execute("INSERT INTO groceryapp_billingdetails \
                         (user_id, order_id, first_name, last_name, \
                         address, apartment, governorate, city, zip, phone, email, \
                         payment_method, payment_status, to_be_paid, delivered_status) \
@@ -79,10 +79,11 @@ def checkout(request):
                         , [cur_user.id, data["order_id"], data['first_name'], data['last_name'],
                         data['address'], data['apartment'], data['governorate'], data['city'], data['zip'], 
                         data['phone'], data['email'], data['payment_method'], payment_status, to_be_paid, False])
+
             cursor.execute(f"UPDATE GroceryApp_cartorder \
                             SET order_status = 'shipped', \
-                            paid_status = '{payment_status}'\
-                            WHERE user_id = '{cur_user.id}'")
+                            paid_status = '{payment_status}' \
+                            WHERE order_id = {data['order_id']}")
 
 
             return render(request, 'GroceryApp/checkedout.html')
@@ -135,7 +136,7 @@ def shop_details(request):
     total_purchase_today = f"select count(CI.product_id) count_last_day from GroceryApp_cartorderitems CI \
     left join GroceryApp_cartorder C \
     on CI.order_id = C.ct_ord_id \
-    where C.order_status = 'shipped' and C.order_date >= dateadd(hour, -24, getdate()) \
+    where C.order_status = 'shipped' and C.order_date >= (current_timestamp - interval '24 hours') \
     group by product_id \
     having product_id = {product.id}"
 
@@ -176,7 +177,7 @@ def shop_grid(request):
     else:
         min_price = request.GET.get('minamount')
         max_price = request.GET.get('maxamount')
-        sql_query = "SELECT * from GroceryApp_product where 1=1" 
+        sql_query = "SELECT * from GroceryApp_product where 1=1 " 
         if category != "All":
             sql_query += f"and category_id in (select cid FROM GroceryApp_category where title = '{category}')"
         if min_price and max_price:

@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import django_heroku
-import dj_database_url
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -111,14 +109,22 @@ DATABASES = {
     # 'HOST':'viaduct.proxy.rlwy.net', 
     # 'PORT':'32970'   
     # }    
+    # 'default':{
+    # 'ENGINE':'django.db.backends.postgresql',                   
+    # 'NAME':'groceryapp',                    
+    # 'USER' :'root',
+    # 'PASSWORD' : 'YUZYebXG82AEY1hu6jLx3KRrLLBcdJ87', 
+    # 'HOST':'http://dpg-cm4gu6mn7f5s73bvcgpg-a.oregon-postgres.render.com', 
+    # 'PORT':'5432',
+    # }      
     'default':{
-    'ENGINE':'django.db.backends.postgresql',                   
-    'NAME':'groceryapp',                    
-    'USER' :'root',
-    'PASSWORD' : 'YUZYebXG82AEY1hu6jLx3KRrLLBcdJ87', 
-    'HOST':'dpg-cm4gu6mn7f5s73bvcgpg-a.oregon-postgres.render.com', 
-    'PORT':'5432'   
-    }                
+        'ENGINE':'django.db.backends.postgresql',                   
+        'NAME':'groceryapp',                    
+        'USER' :'root',
+        'PASSWORD' : 'YUZYebXG82AEY1hu6jLx3KRrLLBcdJ87', 
+        'HOST':'dpg-cm4gu6mn7f5s73bvcgpg-a.oregon-postgres.render.com', 
+        'PORT':'5432',
+        }          
    
 }
 
@@ -160,7 +166,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 
 MEDIA_URL = '/media/'
