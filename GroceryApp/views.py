@@ -16,12 +16,12 @@ from django.db import connection
 # Create your views here.
 def index(request):
     cur_user = request.user
-    products = Product.objects.raw("select * from GroceryApp_product")
-    featured_products = Product.objects.raw("select P.*, C.title as category_title from GroceryApp_product P \
+    products = Product.objects.raw("select * from groceryapp_product")
+    featured_products = Product.objects.raw("select P.*, C.title as category_title from groceryapp_product P \
                                             left join GroceryApp_category C on P.category_id = C.cid \
-                                            where P.product_status='published' and P.featured= 1 ")
-    latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
-    categories = Category.objects.raw("select * from GroceryApp_category")
+                                            where P.product_status='published' and P.featured= True ")
+    latest_products = Product.objects.raw("select * from groceryapp_product order by id desc LIMIT 6")
+    categories = Category.objects.raw("select * from groceryapp_category")
     rated_products = ProductReviews.objects.raw("select * from GroceryApp_productreviews order by rating desc")
     if cur_user.is_authenticated:
         total_cart_items = items_calc(cur_user)
@@ -91,17 +91,19 @@ def checkout(request):
 def contact(request):
     cur_user = request.user
 
-    categories = Category.objects.raw("SELECT * FROM GroceryApp_category")
+    categories = Category.objects.raw("SELECT * FROM groceryapp_category")
+    # categories = Category.objects.raw("SELECT * FROM \"public\".\"groceryapp_category\"")
+
     # categories = Category.objects.all()
 
-    if cur_user.is_authenticated:
-        total_cart_items = items_calc(cur_user)
-    else:
-        total_cart_items= 0
+    # if cur_user.is_authenticated:
+    #     total_cart_items = items_calc(cur_user)
+    # else:
+    #     total_cart_items= 0
 
     context = {
         "categories":categories,
-        "total_cart_items" : total_cart_items, 
+        # "total_cart_items" : total_cart_items, 
         }
     
     return render(request, 'GroceryApp/contact.html', context )
@@ -189,7 +191,7 @@ def shop_grid(request):
 
         
     categories = Category.objects.raw("select * from GroceryApp_category")
-    latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
+    latest_products = Product.objects.raw("select * from GroceryApp_product order by id desc LIMIT 6")
 
     min_price_range = min((p.price for p in products), default=0)
     max_price_range = max((p.price for p in products), default=0)
@@ -312,7 +314,10 @@ def wish_list(request):
 
     with connection.cursor() as cursor:
         cursor.execute(items_cnt_query)
-        wishlist_cnt = cursor.fetchone()[0]
+        result = cursor.fetchone()
+
+    wishlist_cnt = result[0] if result is not None else 0
+
 
     if cur_user.is_authenticated:
         total_cart_items = items_calc(cur_user)

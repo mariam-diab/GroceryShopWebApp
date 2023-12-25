@@ -103,14 +103,22 @@ DATABASES = {
     #     'driver': 'ODBC Driver 17 for SQL Server',
     #     }
     #  }
+    # 'default':{
+    # 'ENGINE':'django.db.backends.postgresql',                   
+    # 'NAME':'railway',                    
+    # 'USER' :'postgres',
+    # 'PASSWORD' : 'cc-BC4AbB---61gB65F*BgCcdFbefefF', 
+    # 'HOST':'viaduct.proxy.rlwy.net', 
+    # 'PORT':'32970'   
+    # }    
     'default':{
     'ENGINE':'django.db.backends.postgresql',                   
-    'NAME':'railway',                    
-    'USER' :'postgres',
-    'PASSWORD' : '5d5-AFCc5*2e3-b*-BE2f4A1BDdgb-C5', 
-    'HOST':'roundhouse.proxy.rlwy.net', 
-    'PORT':'16498'   
-    }                   
+    'NAME':'groceryapp',                    
+    'USER' :'root',
+    'PASSWORD' : 'YUZYebXG82AEY1hu6jLx3KRrLLBcdJ87', 
+    'HOST':'dpg-cm4gu6mn7f5s73bvcgpg-a.oregon-postgres.render.com', 
+    'PORT':'5432'   
+    }                
    
 }
 
