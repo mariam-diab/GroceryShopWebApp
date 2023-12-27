@@ -11,24 +11,31 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import django_heroku
-import dj_database_url
+from dotenv import load_dotenv
+
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6nun)vjhkct2!x&1)%@moomipk59v)dj0xi360o6ia5h-_+9$u'
+# SECRET_KEY = 'django-insecure-6nun)vjhkct2!x&1)%@moomipk59v)dj0xi360o6ia5h-_+9$u'
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+# ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -48,6 +55,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -85,14 +93,14 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
-    'default':{
-    'ENGINE':'mssql',                   
-    'NAME':'database(24_11AM)',                    
-    'HOST':'TOQTOQ\SQLEXPRESS', 
-    'PORT':'',                           
-    'OPTIONS': {
-        'driver': 'ODBC Driver 17 for SQL Server',
-        }
+    # 'default':{
+    # 'ENGINE':'mssql',                   
+    # 'NAME':'database(24_11AM)',                    
+    # 'HOST':'TOQTOQ\SQLEXPRESS', 
+    # 'PORT':'',                           
+    # 'OPTIONS': {
+    #     'driver': 'ODBC Driver 17 for SQL Server',
+    #     }
     # }
     # 'default':{
     #     'ENGINE':'mssql',                   
@@ -102,7 +110,32 @@ DATABASES = {
     #     'OPTIONS': {
     #     'driver': 'ODBC Driver 17 for SQL Server',
     #     }
-     }
+    #  }
+    # 'default':{
+    # 'ENGINE':'django.db.backends.postgresql',                   
+    # 'NAME':'railway',                    
+    # 'USER' :'postgres',
+    # 'PASSWORD' : 'cc-BC4AbB---61gB65F*BgCcdFbefefF', 
+    # 'HOST':'viaduct.proxy.rlwy.net', 
+    # 'PORT':'32970'   
+    # }    
+    # 'default':{
+    # 'ENGINE':'django.db.backends.postgresql',                   
+    # 'NAME':'groceryapp',                    
+    # 'USER' :'root',
+    # 'PASSWORD' : 'YUZYebXG82AEY1hu6jLx3KRrLLBcdJ87', 
+    # 'HOST':'http://dpg-cm4gu6mn7f5s73bvcgpg-a.oregon-postgres.render.com', 
+    # 'PORT':'5432',
+    # }      
+    'default':{
+        'ENGINE':'django.db.backends.postgresql',                   
+        'NAME':'groceryapp',                    
+        'USER' :'root',
+        'PASSWORD' : 'YUZYebXG82AEY1hu6jLx3KRrLLBcdJ87', 
+        'HOST':'dpg-cm4gu6mn7f5s73bvcgpg-a.oregon-postgres.render.com', 
+        'PORT':'5432',
+        }          
+   
 }
 
 
@@ -143,7 +176,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-django_heroku.settings(locals())
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 MEDIA_URL = '/media/'
