@@ -28,6 +28,7 @@ load_dotenv(BASE_DIR / '.env')
 # SECRET_KEY = 'django-insecure-6nun)vjhkct2!x&1)%@moomipk59v)dj0xi360o6ia5h-_+9$u'
 SECRET_KEY = os.getenv('SECRET_KEY')
 
+# DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
 DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
@@ -104,7 +105,7 @@ DATABASES = {
     # }
     # 'default':{
     #     'ENGINE':'mssql',                   
-    #     'NAME':'GroceryShop(21_3PM)',                    
+    #     'NAME':'database(24_11AM)',                    
     #     'HOST':'Mariamu', 
     #     'PORT':'',                           
     #     'OPTIONS': {
@@ -134,7 +135,14 @@ DATABASES = {
         'PASSWORD' : 'YUZYebXG82AEY1hu6jLx3KRrLLBcdJ87', 
         'HOST':'dpg-cm4gu6mn7f5s73bvcgpg-a.oregon-postgres.render.com', 
         'PORT':'5432',
-        }          
+        }   
+    #     'default':{
+    # 'ENGINE':'django.db.backends.postgresql',                   
+    # 'NAME':'webapp',                    
+    # 'USER' :'postgres',
+    # 'PASSWORD' : '12345', 
+    # 'HOST':'localhost', 
+    # }           
    
 }
 
@@ -197,5 +205,5 @@ JAZZMIN_SETTINGS ={
 }
 
 AUTH_USER_MODEL = 'userauths.User'
-APPEND_SLASH = False
+APPEND_SLASH = True
 
