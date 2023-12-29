@@ -16,13 +16,13 @@ from django.db import connection
 # Create your views here.
 def index(request):
     cur_user = request.user
-    products = Product.objects.raw("select * from GroceryApp_product")
-    featured_products = Product.objects.raw("select P.*, C.title as category_title from GroceryApp_product P \
-                                            left join GroceryApp_category C on P.category_id = C.cid \
-                                            where P.product_status='published' and P.featured= 1 ")
-    latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
-    categories = Category.objects.raw("select * from GroceryApp_category")
-    rated_products = ProductReviews.objects.raw("select * from GroceryApp_productreviews order by rating desc")
+    products = Product.objects.raw("select * from groceryapp_product")
+    featured_products = Product.objects.raw("select P.*, C.title as category_title from groceryapp_product P \
+                                            left join GroceryApp_category C on P.category_id = C.id \
+                                            where P.product_status='published' and P.featured= True ")
+    latest_products = Product.objects.raw("select * from groceryapp_product order by id desc LIMIT 6")
+    categories = Category.objects.raw("select * from groceryapp_category")
+    # rated_products = ProductReviews.objects.raw("select * from GroceryApp_productreviews order by rating desc")
     if cur_user.is_authenticated:
         total_cart_items = items_calc(cur_user)
     else:
@@ -33,7 +33,7 @@ def index(request):
         "products" : products,
         "categories" : categories,
         "latest_products": latest_products,
-        "rated_products" : rated_products,
+        # "rated_products" : rated_products,
         "total_cart_items" :total_cart_items, 
     }
     return render(request, 'GroceryApp/index.html', context)
@@ -65,13 +65,13 @@ def checkout(request):
         data = {key: request.POST.get(key) for key in request.POST.keys()}
         if data['payment_method'] == "paypal":  
             to_be_paid = 0 
-            payment_status = 1
+            payment_status = True
         else: 
             to_be_paid = total_price
-            payment_status = 0
+            payment_status = False
 
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO dbo.GroceryApp_billingdetails \
+            cursor.execute("INSERT INTO groceryapp_billingdetails \
                         (user_id, order_id, first_name, last_name, \
                         address, apartment, governorate, city, zip, phone, email, \
                         payment_method, payment_status, to_be_paid, delivered_status) \
@@ -79,10 +79,11 @@ def checkout(request):
                         , [cur_user.id, data["order_id"], data['first_name'], data['last_name'],
                         data['address'], data['apartment'], data['governorate'], data['city'], data['zip'], 
                         data['phone'], data['email'], data['payment_method'], payment_status, to_be_paid, False])
+
             cursor.execute(f"UPDATE GroceryApp_cartorder \
                             SET order_status = 'shipped', \
-                            paid_status = '{payment_status}'\
-                            WHERE user_id = '{cur_user.id}'")
+                            paid_status = '{payment_status}' \
+                            WHERE ct_ord_id = {data['order_id']}")
 
 
             return render(request, 'GroceryApp/checkedout.html')
@@ -91,15 +92,19 @@ def checkout(request):
 def contact(request):
     cur_user = request.user
 
-    categories = Category.objects.raw("select * from GroceryApp_category")
-    if cur_user.is_authenticated:
-        total_cart_items = items_calc(cur_user)
-    else:
-        total_cart_items= 0
+    categories = Category.objects.raw("SELECT * FROM groceryapp_category")
+    # categories = Category.objects.raw("SELECT * FROM \"public\".\"groceryapp_category\"")
+
+    # categories = Category.objects.all()
+
+    # if cur_user.is_authenticated:
+    #     total_cart_items = items_calc(cur_user)
+    # else:
+    #     total_cart_items= 0
 
     context = {
         "categories":categories,
-        "total_cart_items" : total_cart_items, 
+        # "total_cart_items" : total_cart_items, 
         }
     
     return render(request, 'GroceryApp/contact.html', context )
@@ -110,12 +115,12 @@ def shop_details(request):
     categories = Category.objects.raw("select * from GroceryApp_category")
 
     product = Product.objects.raw(f"select P.*, C.title as category_title from GroceryApp_product P \
-                                  left join GroceryApp_category C on P.category_id = C.cid \
+                                  left join GroceryApp_category C on P.category_id = C.id \
                                   where P.title = '{title}'")[0]
         
     product_imgs = ProductImages.objects.raw(f"select id, images from GroceryApp_productimages where product_id = {product.id}")
 
-    related_products = Product.objects.raw(f"select * from GroceryApp_product where category_id = '{product.category_id}'")
+    related_products = Product.objects.raw(f"select * from GroceryApp_product where category_id = {product.category_id}")
 
     if cur_user.is_authenticated:
         total_cart_items = items_calc(cur_user)
@@ -131,7 +136,7 @@ def shop_details(request):
     total_purchase_today = f"select count(CI.product_id) count_last_day from GroceryApp_cartorderitems CI \
     left join GroceryApp_cartorder C \
     on CI.order_id = C.ct_ord_id \
-    where C.order_status = 'shipped' and C.order_date >= dateadd(hour, -24, getdate()) \
+    where C.order_status = 'shipped' and C.order_date >= (current_timestamp - interval '24 hours') \
     group by product_id \
     having product_id = {product.id}"
 
@@ -172,22 +177,30 @@ def shop_grid(request):
     else:
         min_price = request.GET.get('minamount')
         max_price = request.GET.get('maxamount')
-        sql_query = "SELECT * from GroceryApp_product where 1=1" 
+        sql_query = "SELECT * from GroceryApp_product where 1=1"
+
         if category != "All":
-            sql_query += f"and category_id in (select cid FROM GroceryApp_category where title = '{category}')"
+            sql_query += f" and category_id in (select id FROM GroceryApp_category where title = '{category}')"
+
         if min_price and max_price:
-            sql_query += f"and price between {min_price} and {max_price}"
-            # products = Product.objects.raw(f"select * from GroceryApp_product where price between {min_price} and {max_price}")
+            # Convert min_price and max_price to numeric values
+            min_price = float(min_price)
+            max_price = float(max_price)
+            
+            sql_query += f" and price between {min_price} and {max_price}"
+
         if brand_name:
-            sql_query += f"and brand_name = '{brand_name}'"
+            sql_query += f" and brand_name = '{brand_name}'"
+
         if nationality:
-            sql_query += f"and brand_nationality = '{nationality}'"
+            sql_query += f" and brand_nationality = '{nationality}'"
 
         products = Product.objects.raw(sql_query)
 
+
         
     categories = Category.objects.raw("select * from GroceryApp_category")
-    latest_products = Product.objects.raw("select top 6 * from GroceryApp_product order by id desc")
+    latest_products = Product.objects.raw("select * from GroceryApp_product order by id desc LIMIT 6")
 
     min_price_range = min((p.price for p in products), default=0)
     max_price_range = max((p.price for p in products), default=0)
@@ -290,7 +303,7 @@ def shopping_cart(request):
     context = {
         "categories" : categories,
         "user_shopping_cart" : user_shopping_cart,
-        "total_price": total_price,
+        "total_price": total_price or 0,
         "total_cart_items" : total_cart_items, 
     }
     return render(request, 'GroceryApp/shoping-cart.html', context)
@@ -299,31 +312,34 @@ def shopping_cart(request):
 
 
 
-@login_required(login_url='/user/login/')
-def wish_list(request):
-    cur_user = request.user
+# @login_required(login_url='/user/login/')
+# def wish_list(request):
+#     cur_user = request.user
 
-    user_wishlist = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')")
-    products = Product.objects.raw("select * from GroceryApp_product")
+#     user_wishlist = Product.objects.raw(f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')")
+#     products = Product.objects.raw("select * from GroceryApp_product")
 
-    items_cnt_query = f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')"
+#     items_cnt_query = f"select * from GroceryApp_product p join GroceryApp_wishlist wl on wl.product_id =p.id where wl.user_id in (select id from userauths_user where id ='{cur_user.id}')"
 
-    with connection.cursor() as cursor:
-        cursor.execute(items_cnt_query)
-        wishlist_cnt = cursor.fetchone()[0]
+#     with connection.cursor() as cursor:
+#         cursor.execute(items_cnt_query)
+#         result = cursor.fetchone()
 
-    if cur_user.is_authenticated:
-        total_cart_items = items_calc(cur_user)
-    else:
-        total_cart_items= 0
+#     wishlist_cnt = result[0] if result is not None else 0
 
-    context = {
-        'user_wishlist' : user_wishlist,
-        'products' :products,
-        'wishlist_cnt' : wishlist_cnt, 
-        "total_cart_items" :total_cart_items, 
-    }
-    return render(request, 'GroceryApp/wish-list.html', context)
+
+#     if cur_user.is_authenticated:
+#         total_cart_items = items_calc(cur_user)
+#     else:
+#         total_cart_items= 0
+
+#     context = {
+#         'user_wishlist' : user_wishlist,
+#         'products' :products,
+#         'wishlist_cnt' : wishlist_cnt, 
+#         "total_cart_items" :total_cart_items, 
+#     }
+#     return render(request, 'GroceryApp/wish-list.html', context)
 
 
 
@@ -333,14 +349,30 @@ def update_order(request):
     if request.method == 'POST':
         try:
             order_id = request.POST.get("order_id")
-            new_quantity = request.POST.get("new_quantity")
+            new_quantity = int(request.POST.get("new_quantity"))
             product_id = request.POST.get("product_id")
             print(f"New Quantity: {new_quantity}")
             print(f"order_id: {order_id}")
+            product_price = Product.objects.raw(f"select id, price from groceryapp_product where id = {product_id}")[0].price
+            CartOrderItems.objects.filter(order_id=order_id, product_id=product_id).update(total=new_quantity*product_price)
             query = f"update GroceryApp_cartorderitems set quantity = {new_quantity} where order_id = {order_id} and product_id = {product_id}"
-
             with connection.cursor() as cursor:
                 cursor.execute(query)
+
+            user_id = request.user.id
+            print(user_id)
+            old_qty = Product.objects.raw(f"select id, available_quantity from groceryapp_product p join GroceryApp_cartorderitems ct on ct.product_id =p.id join GroceryApp_cartorder co on co.ct_ord_id= ct.order_id where co.order_status = 'processing' and order_id= {order_id} and product_id= {product_id} and co.user_id in (select id from userauths_user where id ={user_id})")
+            old_qty = old_qty[0].available_quantity
+            print(old_qty)
+            diff = old_qty-new_quantity
+            print(diff)
+            query1 = f"UPDATE GroceryApp_product SET available_quantity = {diff} WHERE id = {product_id}"
+
+            with connection.cursor() as cursor:
+                cursor.execute(query1)
+                cursor.execute()
+
+
 
             response_data = {'status': 'success', 'message': 'Order updated successfully'}
             return JsonResponse(response_data)
@@ -389,15 +421,38 @@ from django.views.decorators.http import require_POST
 def add_to_cart(request):  
     product_id = request.POST.get('id')
     quantity = int(request.POST.get('qty'))
+    user_id = request.user.id
 
-    cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
+
+    cart_order_query = f"SELECT * \
+                    FROM cart_order \
+                    WHERE user_id = {user_id} \
+                    AND paid_status = FALSE \
+                    AND order_status = 'processing' \
+                    LIMIT 1"
+    
+    with connection.cursor() as cursor:
+        cursor.execute(cart_order_query)
+        cart_order = cursor.fetchone()[0]
+
+    # cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
     # print(cart_order)
 
     if not cart_order:
-        cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
+        # cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
+        insert_query = f"INSERT INTO cart_order \
+                    (user_id, paid_status, order_status) \
+                    VALUES ({request.id}, FALSE, 'processing') \
+                    RETURNING *"
+        with connection.cursor() as cursor:
+            cursor.execute(insert_query)
         cart_order.save()
 
-    product = get_object_or_404(Product, id=product_id)
+    # product = get_object_or_404(Product, id=product_id)
+    get_product_query = f"SELECT * FROM product WHERE id = {product_id}"
+    with connection.cursor() as cursor:
+        cursor.execute(get_product_query)
+        product = cursor.fetchone()[0]
 
     cart_item, created = CartOrderItems.objects.get_or_create(order=cart_order, product=product)
 
