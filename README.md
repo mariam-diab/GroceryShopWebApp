@@ -12,15 +12,14 @@ cd GroceryShopWebApp
 pip install requirements.txt
 ```
 3. To use the code on your local machine use the main branch
+
 ```
 git checkout main
 run `http://127.0.0.1:8000`
+```
 
-3. To access the production version use the production branch
+4. To access the production version use the production branch
 ```
 git checkout production-branch
 ```
-4. You can find the deployed website here
-```
 run `https://shopejustt.onrender.com/`
-```

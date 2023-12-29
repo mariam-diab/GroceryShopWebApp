@@ -81,11 +81,11 @@
                     <div class="product__details__pic">
                         <div class="product__details__pic__item">
                             <img class="product__details__pic__item--large"
-                                src = {{product.img.url}} alt="">
+                                src = {{product.img}} alt={{ product.title }}>
                         </div>
                         <div class="product__details__pic__slider owl-carousel">
                             {% for img in imgs %}
-                                <img data-imgbigurl="{{img.images.url}}" src="{{img.images.url}}" alt="">
+                                <img data-imgbigurl="{{img}}" src="{{img}}" alt="">
                             {% endfor %}                
                         </div>
                     </div>
@@ -273,7 +273,7 @@
                 {% for p in related_products %}
                 <div class="col-lg-3 col-md-4 col-sm-6">
                     <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg={{p.img.url}}>
+                        <div class="product__item__pic set-bg" data-setbg={{p.img}}>
                             <ul class="product__item__pic__hover">
                                 <!-- <li><a href="#"><i class="fa fa-heart"></i></a></li> -->
                                 <li><a href="#"><i class="fa fa-retweet"></i></a></li>

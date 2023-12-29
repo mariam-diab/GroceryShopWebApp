@@ -17,6 +17,7 @@ from django.db import connection
 def index(request):
     cur_user = request.user
     products = Product.objects.raw("select * from groceryapp_product")
+    egyptian_products = Product.objects.all().filter(brand_nationality='Egypt')[:6]
     featured_products = Product.objects.raw("select P.*, C.title as category_title from groceryapp_product P \
                                             left join GroceryApp_category C on P.category_id = C.id \
                                             where P.product_status='published' and P.featured= True ")
@@ -35,6 +36,7 @@ def index(request):
         "latest_products": latest_products,
         # "rated_products" : rated_products,
         "total_cart_items" :total_cart_items, 
+        "egyptian_products": egyptian_products
     }
     return render(request, 'GroceryApp/index.html', context)
 
@@ -63,7 +65,7 @@ def checkout(request):
     elif request.method == "POST":
         order_id = request.POST.get('order_id')
         data = {key: request.POST.get(key) for key in request.POST.keys()}
-        if data['payment_method'] == "paypal":  
+        if data['payment_method'] == "paypal" or data['payment_method'] == "card":
             to_be_paid = 0 
             payment_status = True
         else: 
@@ -183,7 +185,6 @@ def shop_grid(request):
             sql_query += f" and category_id in (select id FROM GroceryApp_category where title = '{category}')"
 
         if min_price and max_price:
-            # Convert min_price and max_price to numeric values
             min_price = float(min_price)
             max_price = float(max_price)
             
@@ -207,7 +208,7 @@ def shop_grid(request):
 
     print(min_price_range, max)
 
-    paginator = Paginator(products, 6) 
+    paginator = Paginator(products, 30) 
     page_number = request.GET.get('page')
     paginated_products = paginator.get_page(page_number) 
 
@@ -424,35 +425,35 @@ def add_to_cart(request):
     user_id = request.user.id
 
 
-    cart_order_query = f"SELECT * \
-                    FROM cart_order \
-                    WHERE user_id = {user_id} \
-                    AND paid_status = FALSE \
-                    AND order_status = 'processing' \
-                    LIMIT 1"
+    # cart_order_query = f"SELECT * \
+    #                 FROM cart_order \
+    #                 WHERE user_id = {user_id} \
+    #                 AND paid_status = FALSE \
+    #                 AND order_status = 'processing' \
+    #                 LIMIT 1"
     
-    with connection.cursor() as cursor:
-        cursor.execute(cart_order_query)
-        cart_order = cursor.fetchone()[0]
+    # with connection.cursor() as cursor:
+    #     cursor.execute(cart_order_query)
+    #     cart_order = cursor.fetchone()[0]
 
-    # cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
+    cart_order = CartOrder.objects.filter(user=request.user, paid_status=False, order_status= 'processing').first()
     # print(cart_order)
 
     if not cart_order:
-        # cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
-        insert_query = f"INSERT INTO cart_order \
-                    (user_id, paid_status, order_status) \
-                    VALUES ({request.id}, FALSE, 'processing') \
-                    RETURNING *"
-        with connection.cursor() as cursor:
-            cursor.execute(insert_query)
+        cart_order = CartOrder.objects.create(user=request.user, paid_status=False, order_status= 'processing')
+        # insert_query = f"INSERT INTO cart_order \
+        #             (user_id, paid_status, order_status) \
+        #             VALUES ({request.id}, FALSE, 'processing') \
+        #             RETURNING *"
+        # with connection.cursor() as cursor:
+        #     cursor.execute(insert_query)
         cart_order.save()
 
-    # product = get_object_or_404(Product, id=product_id)
-    get_product_query = f"SELECT * FROM product WHERE id = {product_id}"
-    with connection.cursor() as cursor:
-        cursor.execute(get_product_query)
-        product = cursor.fetchone()[0]
+    product = get_object_or_404(Product, id=product_id)
+    # get_product_query = f"SELECT * FROM product WHERE id = {product_id}"
+    # with connection.cursor() as cursor:
+    #     cursor.execute(get_product_query)
+    #     product = cursor.fetchone()[0]
 
     cart_item, created = CartOrderItems.objects.get_or_create(order=cart_order, product=product)
 
