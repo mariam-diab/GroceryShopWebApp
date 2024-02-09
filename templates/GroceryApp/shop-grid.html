@@ -217,7 +217,7 @@
                                         {% for p in latest_products|slice:":3" %}
                                         <div class="latest-product__item">
                                             <div class="latest-product__item__pic">
-                                                <img src={{p.img.url}} alt="">
+                                                <img src={{p.img}} alt="">
                                             </div>
                                             <div class="latest-product__item__text">
                                                 <a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}" style="color:black;">{{p.title}}</a>
@@ -230,7 +230,7 @@
                                         {% for p in latest_products|slice:"3:" %}
                                         <div class="latest-product__item">
                                             <div class="latest-product__item__pic">
-                                                <img src={{p.img.url}} alt="">
+                                                <img src={{p.img}} alt="">
                                             </div>
                                             <div class="latest-product__item__text">
                                                 <a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}" style="color:black;">{{p.title}}</a>
@@ -256,7 +256,7 @@
                                     <div class="col-lg-4">
                                         <div class="product__discount__item">
                             
-                                            <div class="product__discount__item__pic set-bg" data-setbg="{{ p.img.url}}">
+                                            <div class="product__discount__item__pic set-bg" data-setbg="{{ p.img}}">
                                                 <div class="product__discount__percent">{{ p.get_percentage|floatformat:0 }}%</div>
                                             
                                                 <ul class="product__item__pic__hover">
@@ -316,7 +316,7 @@
                         {% for p in paginated_products %}
                         <div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
-                                <div class="product__item__pic set-bg" data-setbg={{p.img.url}}>
+                                <div class="product__item__pic set-bg" data-setbg={{p.img}}>
                                     <style>
                                         .col-lg-8 {
                                           margin-top: 260px; /* Adjust the top margin as needed */
@@ -361,13 +361,13 @@
                     </div> -->
                     <div class="product__pagination">
                         {% if paginated_products.has_previous %}
-                            <a href="?page={{ paginated_products.previous_page_number }}"><i class="fa fa-long-arrow-left"></i></a>
+                            <a href="?category={{category}}&minamount={{min_price_range}}&maxamount={{max_price_range}}&brand_name={{ brand }}&nationality={{ nationality }}&page={{ paginated_products.previous_page_number }}"><i class="fa fa-long-arrow-left"></i></a>
                         {% endif %}
                         {% for num in paginated_products.paginator.page_range %}
-                            <a href="?page={{ num }}">{{ num }}</a>
+                            <a href="?category={{category}}&minamount={{min_price_range}}&maxamount={{max_price_range}}&brand_name={{ brand }}&nationality={{ nationality }}&page={{ num }}">{{ num }}</a>
                         {% endfor %}
                         {% if paginated_products.has_next %}
-                            <a href="?page={{ paginated_products.next_page_number }}"><i class="fa fa-long-arrow-right"></i></a>
+                            <a href="?category={{category}}&minamount={{min_price_range}}&maxamount={{max_price_range}}&brand_name={{ brand }}&nationality={{ nationality }}&page={{ paginated_products.next_page_number }}"><i class="fa fa-long-arrow-right"></i></a>
                         {% endif %}
                     </div>  
                 </div>

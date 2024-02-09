@@ -1,5 +1,5 @@
 $(function() {
-    var minValue = parseInt($(".price-range").attr("data-min")) - 1;
+    var minValue = parseInt($(".price-range").attr("data-min"));
     var maxValue = parseInt($(".price-range").attr("data-max")) + 1;
     
     function initializeSlider() {

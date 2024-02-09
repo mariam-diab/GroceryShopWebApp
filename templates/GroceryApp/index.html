@@ -64,7 +64,9 @@
                 <div class="categories__slider owl-carousel">
                     {% for c in categories %}
                     <div class="col-lg-3">
-                        <div class="categories__item set-bg" data-setbg="{{c.img.url }}">
+                        {% if c.img %}
+                        <div class="categories__item set-bg" data-setbg="{{c.img }}">
+                        {% endif %}
                             <h5><a href="{% url 'GroceryApp:shop_grid' %}?category={{ c.title }}">{{c.title}}</a></h5>
                         </div>
                     </div>
@@ -86,10 +88,10 @@
                     <div class="featured__controls">
                         <ul>
                             <li class="active" data-filter="*">All</li>
-                            <li data-filter=".{{'Fruits'|slugify}}">Fruits</li>
-                            <li data-filter=".{{ 'Fresh meat'|slugify }}">Fresh Meat</li>
-                            <li data-filter=".{{'Vegetables'|slugify}}">Vegetables</li>
-                            <li data-filter=".{{'Fast Food'|slugify}}">Fast Food</li>
+                            <li data-filter=".{{'beverages'|slugify}}">Beverages</li>
+                            <li data-filter=".{{ 'dairy-products'|slugify }}">Dairy products</li>
+                            <li data-filter=".{{'delicatessen'|slugify}}">Delicatessen</li>
+                            <li data-filter=".{{'fruits-veg'|slugify}}">Fruits and vegetables</li>
                         </ul>
                     </div>
                 </div>
@@ -98,7 +100,7 @@
             {% for p in featured_products %}
                 <div class="col-lg-3 col-md-4 col-sm-6 mix {{p.category_title|slugify }}">
                     <div class="featured__item">
-                        <div class="featured__item__pic set-bg" data-setbg={{p.img.url }}>
+                        <div class="featured__item__pic set-bg" data-setbg={{p.img }}>
                             <ul class="featured__item__pic__hover">
                                 <!-- <li><a href="#"><i class="fa fa-heart"></i></a></li>
                                 <li><a href="#"><i class="fa fa-retweet"></i></a></li> -->
@@ -169,7 +171,9 @@
                                 {% for p in latest_products|slice:":3" %}
                                 <div class="latest-product__item">
                                     <div class="latest-product__item__pic">
-                                        <img src={{p.img.url}} alt="">
+                                        {% if p.img %}
+                                        <img src={{p.img}} alt="">
+                                        {% endif %}
                                     </div>
                                     <div class="latest-product__item__text">
                                         <a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}" style="color:black;">{{p.title}}</a>
@@ -182,7 +186,46 @@
                                 {% for p in latest_products|slice:"3:" %}
                                 <div class="latest-product__item">
                                     <div class="latest-product__item__pic">
-                                        <img src={{p.img.url}} alt="">
+                                        {% if p.img %}
+                                        <img src={{p.img}} alt="">
+                                        {% endif %}
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}" style="color:black;">{{p.title}}</a>
+                                        <span>EGP {{p.price}}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="latest-product__text">
+                        <h4>100% Egyptian Products</h4>
+                        <div class="latest-product__slider owl-carousel">
+                            <div class="latest-prdouct__slider__item">
+                                {% for p in egyptian_products|slice:":3" %}
+                                <div class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        {% if p.img %}
+                                        <img src="{{ p.img }}" alt="" width="5" height="5">
+                                        {% endif %}
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}" style="color:black;">{{p.title}}</a>
+                                        <span>EGP {{p.price}}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="latest-prdouct__slider__item">
+                                {% for p in egyptian_products|slice:"3:" %}
+                                <div class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        {% if p.img %}
+                                        <img src="{{ p.img }}" alt="" width="5" height="5">
+                                        {% endif %}
                                     </div>
                                     <div class="latest-product__item__text">
                                         <a href="{% url 'GroceryApp:shop_details' %}?title={{ p.title }}" style="color:black;">{{p.title}}</a>

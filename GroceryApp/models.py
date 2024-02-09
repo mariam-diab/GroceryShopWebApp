@@ -10,14 +10,14 @@ from django.dispatch import receiver
 class Category(models.Model):
     # cid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet= "abcdefgh12345", prefix="cat")
     title = models.CharField(max_length=100, blank=True, null=True)
-    img = models.ImageField(blank=True, null=True, upload_to= 'category')
+    img = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = 'groceryapp_category'
         verbose_name_plural = "categories"
     
     def category_image(self):
-        return mark_safe('<img src="%s" width="50" height="50" />' %(self.img.url))
+        return mark_safe('<img src="%s" width="50" height="50" />' %(self.img))
     
     def __str__(self):
         return self.title
@@ -58,9 +58,9 @@ class Product(models.Model):
     # digital = models.BooleanField(default= True)
     # updated = models.DateTimeField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete= models.SET_NULL, to_field='id', null=True)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=255)
     product_description = models.TextField(max_length=400 , blank=True, null=True, default= 'Freshly sourced from our brand selection.')
-    img = models.ImageField(blank=True, null=True, upload_to= 'user_directory_path')
+    img = models.URLField(blank=True, null=True)
     brand_name = models.CharField(max_length=100, null=False, default= 'Ogani')
     brand_nationality = models.CharField(max_length=100, null=False, default= 'Egypt')
     unit_type = models.CharField(max_length=6, choices=PRODUCT_UNITS, default='PIECE')
@@ -70,10 +70,11 @@ class Product(models.Model):
     available_quantity = models.PositiveIntegerField(default=0)
     in_stock = models.BooleanField(default= False)
     featured = models.BooleanField(default= True)
-    product_status = models.CharField(choices = STATUS, max_length=10, default= 'in_review')
+    product_status = models.CharField(choices = STATUS, max_length=10, default= 'published')
     added_by = models.ForeignKey(User, on_delete= models.SET_NULL, null=True)
     sku = ShortUUIDField(unique=True, length=10, max_length=20, alphabet= "abcdefgh12345", prefix= "sku")
     date = models.DateTimeField(auto_now_add = True)
+    exp_date = models.DateTimeField(null = True)
 
 
     class Meta:
@@ -82,7 +83,7 @@ class Product(models.Model):
 
 
     def product_image(self):
-        return mark_safe('<img src="%s" width="50" height="50" />' %(self.img.url))
+        return mark_safe('<img src="%s" width="50" height="50" />' %(self.img))
     
     def __str__(self):
         return self.title
@@ -99,7 +100,7 @@ class Product(models.Model):
     
 class ProductImages(models.Model):
     product = models.ForeignKey(Product, models.DO_NOTHING ,null=True)
-    images = models.ImageField(upload_to='product-images')
+    images = models.URLField(null= True, blank= True)
     date = models.DateTimeField(auto_now_add= True)
 
     class Meta:
